@@ -20,29 +20,76 @@ public abstract class Piece : MonoBehaviour
 
     public abstract List<Tile> FindMovableMoveTiles();      //움직일 수 있는 타일 찾는 함수
 
-    //나중에 이 함수 유사하게 
-    public void Move()
+    //Parameter :   isSkip = Piece 이동 모션을 스킵할 것인가?
+    //              selectTile = ChessManager에서 마우스로 선택한 Tile
+    public void Move(Tile selectTIle, bool isSkip = true)
     {
-        //현재 선택한 기물의 이동을 설정합니다. 
-         if(isClickPiece)
+        //0. 이동 가능한 타일로 선택되어져 있는가?
+        if (!selectTIle.isSelectedMovalleTile)
+            return;
+
+        //1. Piece가 해당 타일에 존재하지 않을 경우 그냥 이동
+        if (selectTIle.nowLocateColor == PlayerColor.Null)
         {
-            ///if(이동 불가능한 땅 선택하면)
-            ///     isClickPiece = false;
+            //기존에 존재한 타일 정보 변경
+            ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y].nowLocateColor = PlayerColor.Null;
+            
+            //piece가 앞으로 위치할 Tile의 정보 변경
+            if((int)pieceType < 7)
+                selectTIle.nowLocateColor = PlayerColor.White;
+            else
+                selectTIle.nowLocateColor = PlayerColor.Black;
+
+            //현재 Piece 정보 변경
+            this.transform.position = selectTIle.transform.position;
+            nowPos = new Vector2Int((int)selectTIle.transform.position.x, (int)selectTIle.transform.position.y);
+
+            //모두 끝낸 후 정보 초기화
+            ClearPieceInfo();
         }
+        
+        //2. Piece가 해당 타일에 존재할 경우
+        //2-1. 적일 경우
+        //2-2. 아군일 경우
     }
 
     private void OnMouseDown()
     {
-        //이미 선택한 생태에서 한 번 더 누르면 누른 행위 취소하고 이동 가능한 타일 리스트 초기화
-        if (isClickPiece)
+        //1. 선택한 Piece가 있는 상태에서 다른 Piece를 고를 때
+        //이전에 선택한 Piece의 이동 가능 타일을 표시한 것들을 초기화
+        if (ChessManager.chessManager.nowPiece != null)
         {
-            isClickPiece = false;
-            movableTIles.Clear();
+            ClearPieceInfo();
         }
 
         //처음 클릭하면 해당 기물을 선택했다고 표시하고 이동 가능한 타일을 찾음
+        ChessManager.chessManager.nowPiece = this;
         isClickPiece = true;
-        Debug.Log("MovableTiles Count : " + movableTIles.Count);
         FindMovableMoveTiles();
+
+        //찾은 타일의 AvailableCircle을 활성화하여 움직일 수 있는 위치를 확인한다.
+        for (int i = 0; i < movableTIles.Count; i++)
+        {
+            movableTIles[i].SetAvailableCircle(true);
+        }
+
+        Debug.Log("MovableTiles Count : " + movableTIles.Count);
+    }
+
+    //현재 선택한 Piece의 정보를 초기화합니다.
+    void ClearPieceInfo()
+    {
+        ChessManager.chessManager.nowPiece.isClickPiece = false;
+
+        //AvailableCircle을 active 상태를 다시 false로 변환
+        for (int i = 0; i < ChessManager.chessManager.nowPiece.movableTIles.Count; i++)
+        {
+            ChessManager.chessManager.nowPiece.movableTIles[i].SetAvailableCircle(false);
+            ChessManager.chessManager.nowPiece.movableTIles[i].isSelectedMovalleTile = false;
+        }
+
+        ChessManager.chessManager.nowPiece.movableTIles.Clear();
+
+        ChessManager.chessManager.nowPiece = null;
     }
 }

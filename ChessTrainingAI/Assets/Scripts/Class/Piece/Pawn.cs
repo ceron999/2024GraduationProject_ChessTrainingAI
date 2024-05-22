@@ -12,7 +12,7 @@ public class Pawn : Piece
 
         //1.전진 방향 1칸
         evaluatedTile = ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + direction];
-        if (!evaluatedTile.isExistPiece && !evaluatedTile.isSelectedMovalleTile)
+        if (!evaluatedTile.isSelectedMovalleTile)
         {
             movableTIles.Add(evaluatedTile);
             ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + direction].isSelectedMovalleTile = true;
@@ -20,9 +20,9 @@ public class Pawn : Piece
 
         //2.전진 방향 2칸(흰색일때)
         evaluatedTile = ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + 2 * direction];
-        if (ChessManager.chessManager.playerColor == PlayerColor.White && nowPos.x != 6)
+        if (ChessManager.chessManager.playerColor == PlayerColor.White && nowPos.y != 6)
         {
-            if (!evaluatedTile.isExistPiece && !evaluatedTile.isSelectedMovalleTile)
+            if (!evaluatedTile.isSelectedMovalleTile)
             {
                 movableTIles.Add(evaluatedTile);
                 ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + 2 * direction].isSelectedMovalleTile = true;
@@ -30,12 +30,15 @@ public class Pawn : Piece
         }
 
         //3.전진 방향 2칸(검은색일때)
-        else if (ChessManager.chessManager.playerColor == PlayerColor.Black && nowPos.x != 1)
-            if (!evaluatedTile.isExistPiece && !evaluatedTile.isSelectedMovalleTile)
+        else if (ChessManager.chessManager.playerColor == PlayerColor.Black && nowPos.y != 1)
+            if (!evaluatedTile.isSelectedMovalleTile)
             {
                 movableTIles.Add(evaluatedTile);
                 ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + 2 * direction].isSelectedMovalleTile = true;
             }
+
+        //4, 대각선 방향에 적이 존재할 때
+
 
         DebugMovableTiles(movableTIles);
 

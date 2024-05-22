@@ -12,6 +12,10 @@ public class ChessManager : MonoBehaviour
     public static ChessManager chessManager;
 
     [SerializeField]
+    Camera mainCamera;
+    int tileLayer = 1 << 8;
+
+    [SerializeField]
     GameObject tilePrefab;
     [SerializeField]
     Transform chessBoardParent;
@@ -49,6 +53,8 @@ public class ChessManager : MonoBehaviour
     GameObject blackKingPrefab;
 
     public PlayerColor playerColor = PlayerColor.Null;
+    RaycastHit2D hit;
+    public Piece nowPiece;
 
     void Awake()
     {
@@ -69,6 +75,12 @@ public class ChessManager : MonoBehaviour
         SetChessPiece();
     }
 
+    private void Update()
+    {
+        MovePiece();
+    }
+
+    #region Set Chess Board
     void SetChessBoard()
     {
         bool colorChange = true;
@@ -123,18 +135,18 @@ public class ChessManager : MonoBehaviour
                 piecePrefab = Instantiate(blackPawnPrefab, blackPiecesParent);
                 piecePrefab.GetComponent<Transform>().position = new Vector2(i, 6);
                 piecePrefab.GetComponent<Piece>().nowPos = new Vector2Int(i, 6);
+                piecePrefab.GetComponent<Piece>().pieceType = PieceType.BlackPawn;
 
-                //기물이 존재함을 타일에 전송
-                chessTileList[i, 6].isExistPiece = true;
+                chessTileList[i, 6].nowLocateColor = getColor;
             }
             else if (getColor == PlayerColor.White)
             {
                 piecePrefab = Instantiate(whitePawnPrefab, whitePiecesParent);
                 piecePrefab.GetComponent<Transform>().position = new Vector2(i, 1);
                 piecePrefab.GetComponent<Piece>().nowPos = new Vector2Int(i, 1);
+                piecePrefab.GetComponent<Piece>().pieceType = PieceType.WhitePawn;
 
-                //기물이 존재함을 타일에 전송
-                chessTileList[i, 1].isExistPiece = true;
+                chessTileList[i, 1].nowLocateColor = getColor;
             }
             else
                 Debug.Log("Pawn 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -157,11 +169,12 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(1, 7);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(6, 7);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.BlackKnight;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.BlackKnight;
 
 
-            //기물이 존재함을 타일에 전송
-            chessTileList[1, 7].isExistPiece = true;
-            chessTileList[6, 7].isExistPiece = true;
+            chessTileList[1, 7].nowLocateColor = getColor;
+            chessTileList[6, 7].nowLocateColor = getColor;
         }
         else if (getColor == PlayerColor.White)
         {
@@ -173,10 +186,12 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(1, 0);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(6, 0);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.WhiteKnight;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.WhiteKnight;
 
-            //기물이 존재함을 타일에 전송
-            chessTileList[1, 0].isExistPiece = true;
-            chessTileList[6, 0].isExistPiece = true;
+
+            chessTileList[1, 0].nowLocateColor = getColor;
+            chessTileList[6, 0].nowLocateColor = getColor;
         }
         else
             Debug.Log("Knight 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -199,10 +214,12 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(2, 7);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(5, 7);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.BlackBishop;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.BlackBishop;
 
-            //기물이 존재함을 타일에 전송
-            chessTileList[2, 7].isExistPiece = true;
-            chessTileList[5, 7].isExistPiece = true;
+
+            chessTileList[2, 7].nowLocateColor = getColor;
+            chessTileList[5, 7].nowLocateColor = getColor;
         }
         else if (getColor == PlayerColor.White)
         {
@@ -214,10 +231,11 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(2, 0);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(5, 0);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.WhiteBishop;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.WhiteBishop;
 
-            //기물이 존재함을 타일에 전송
-            chessTileList[2, 0].isExistPiece = true;
-            chessTileList[5, 0].isExistPiece = true;
+            chessTileList[2, 0].nowLocateColor = getColor;
+            chessTileList[5, 0].nowLocateColor = getColor;
         }
         else
             Debug.Log("Bishop 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -240,10 +258,11 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(0, 7);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(7, 7);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.BlackRook;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.BlackRook;
 
-            //기물이 존재함을 타일에 전송
-            chessTileList[0, 7].isExistPiece = true;
-            chessTileList[7, 7].isExistPiece = true;
+            chessTileList[0, 7].nowLocateColor = getColor;
+            chessTileList[7, 7].nowLocateColor = getColor;
         }
         else if (getColor == PlayerColor.White)
         {
@@ -255,10 +274,11 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(0, 0);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(7, 0);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.WhilteRook;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.WhilteRook;
 
-            //기물이 존재함을 타일에 전송
-            chessTileList[0, 0].isExistPiece = true;
-            chessTileList[7, 0].isExistPiece = true;
+            chessTileList[0, 0].nowLocateColor = getColor;
+            chessTileList[7, 0].nowLocateColor = getColor;
         }
         else
             Debug.Log("Rook 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -275,18 +295,18 @@ public class ChessManager : MonoBehaviour
             piecePrefab1 = Instantiate(blackQueenPrefab, blackPiecesParent);
             piecePrefab1.GetComponent<Transform>().position = new Vector2(3, 7);
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(3, 7);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.BlackQueen;
 
-            //기물이 존재함을 타일에 전송
-            chessTileList[3, 7].isExistPiece = true;
+            chessTileList[3, 7].nowLocateColor = getColor;
         }
         else if (getColor == PlayerColor.White)
         {
             piecePrefab1 = Instantiate(whiteQueenPrefab, whitePiecesParent);
             piecePrefab1.GetComponent<Transform>().position = new Vector2(3, 0);
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(3, 0);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.WhiteQueen;
 
-            //기물이 존재함을 타일에 전송
-            chessTileList[3, 0].isExistPiece = true;
+            chessTileList[3, 0].nowLocateColor = getColor;
         }
         else
             Debug.Log("Queen 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -303,28 +323,49 @@ public class ChessManager : MonoBehaviour
             piecePrefab1 = Instantiate(blackKingPrefab, blackPiecesParent);
 
             piecePrefab1.GetComponent<Transform>().position = new Vector2(4, 7);
+            piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(4, 7);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.BlackKing;
 
-
-            //기물이 존재함을 타일에 전송
-            chessTileList[4, 7].isExistPiece = true;
+            chessTileList[4, 7].nowLocateColor = getColor;
         }
         else if (getColor == PlayerColor.White)
         {
             piecePrefab1 = Instantiate(whiteKingPrefab, whitePiecesParent);
 
             piecePrefab1.GetComponent<Transform>().position = new Vector2(4, 0);
+            piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(4, 0);
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.WhiteKing;
 
-            //기물이 존재함을 타일에 전송
-            chessTileList[4, 0].isExistPiece = true;
+            chessTileList[4, 0].nowLocateColor = getColor;
         }
         else
             Debug.Log("King 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
 
     }
+    #endregion
 
     //게임을 진행하기 전 플레이어의 색을 미리 지정합니다.
     void SetPlayerColor()
     {
-        
+        float randomNum = Random.Range(0, 10);
+        if (randomNum < 5)
+            playerColor = PlayerColor.White;
+        else
+            playerColor = PlayerColor.Black;
+    }
+
+    void MovePiece()
+    {
+        //Piece가 선택되지 않았으면 아무 일도 일어나지 않음
+        if (nowPiece == null)
+            return;
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            Vector2 rayPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            hit = Physics2D.Raycast(rayPos, Vector2.zero);
+
+            nowPiece.Move(hit.collider.GetComponent<Tile>());
+        }
     }
 }

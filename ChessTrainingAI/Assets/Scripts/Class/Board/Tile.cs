@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public bool isExistPiece = false;
+    [SerializeField]
+    GameObject availableCircle;
+    public PlayerColor nowLocateColor;                    //현재 위치한 Piece;
+
     public bool isSelectedMovalleTile = false;      //MovableTiles에 들어갔을 때 중복으로 나타나지 않기 위해 추가
+
+    //현재 이동 가능한 타일 위치를 쉽게 보여주기 위하여 설정
+    public void SetAvailableCircle(bool isActive)
+    {
+        availableCircle.SetActive(isActive);
+    }
 }
