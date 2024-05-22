@@ -13,7 +13,6 @@ public class ChessManager : MonoBehaviour
 
     [SerializeField]
     Camera mainCamera;
-    int tileLayer = 1 << 8;
 
     [SerializeField]
     GameObject tilePrefab;
