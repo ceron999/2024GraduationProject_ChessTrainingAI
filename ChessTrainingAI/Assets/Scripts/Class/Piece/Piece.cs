@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public enum PieceType
 {
     Null, 
@@ -11,14 +10,22 @@ public enum PieceType
 }
 
 public abstract class Piece : MonoBehaviour
-{
+{ 
     public PieceType pieceType;
+    public GameColor pieceColor;
     public Vector2Int nowPos;
-    public List<Tile> movableTIles = null;                         //현재 위치에서 이동 가능한 타일
-    
-    public bool isClickPiece = false;                       //현재 이 기물이 선택되었는가?
+    public List<Tile> movableTIles = null;                      //현재 위치에서 이동 가능한 타일
+    public List<Tile> attackTIles = null;                      //현재 위치에서 이동 가능한 타일
 
-    public abstract List<Tile> FindMovableMoveTiles();      //움직일 수 있는 타일 찾는 함수
+    public bool isClickPiece = false;                           //현재 이 기물이 선택되었는가?
+
+    //이외 정보
+    int pieceLayer = 1 << 8;
+
+    public abstract void FindMovableMoveTiles();                //움직일 수 있는 타일 찾는 함수
+
+    public abstract void SetAttackTile(bool isActive);                       //현재 공격 타일 설정 함수
+                                                                             //isActive가 참이면 AttackTile = true;
 
     //Parameter :   isSkip = Piece 이동 모션을 스킵할 것인가?
     //              selectTile = ChessManager에서 마우스로 선택한 Tile
@@ -28,33 +35,36 @@ public abstract class Piece : MonoBehaviour
         if (!selectTIle.isSelectedMovalleTile)
             return;
 
-        //1. Piece가 해당 타일에 존재하지 않을 경우 그냥 이동
-        if (selectTIle.nowLocateColor == PlayerColor.Null)
+        SetAttackTile(false);
+        //기존에 존재한 타일 정보 변경
+        ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y].nowLocateColor = GameColor.Null;
+
+        //현재 Piece 정보 변경
+        this.transform.position = selectTIle.transform.position;
+        nowPos = new Vector2Int((int)selectTIle.transform.position.x, (int)selectTIle.transform.position.y);
+
+        //해당 타일에 적 piece가 존재할 경우 해당 기물 파괴
+        if (selectTIle.nowLocateColor != GameColor.Null)
         {
-            //기존에 존재한 타일 정보 변경
-            ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y].nowLocateColor = PlayerColor.Null;
-            
-            //piece가 앞으로 위치할 Tile의 정보 변경
-            if((int)pieceType < 7)
-                selectTIle.nowLocateColor = PlayerColor.White;
-            else
-                selectTIle.nowLocateColor = PlayerColor.Black;
-
-            //현재 Piece 정보 변경
-            this.transform.position = selectTIle.transform.position;
-            nowPos = new Vector2Int((int)selectTIle.transform.position.x, (int)selectTIle.transform.position.y);
-
-            //모두 끝낸 후 정보 초기화
-            ClearPieceInfo();
+            Collider[] findPiece = Physics.OverlapSphere(this.transform.position, 0.1f, pieceLayer);
+            if (findPiece[0].name != this.name)
+                Destroy(findPiece[0].gameObject);
         }
-        
-        //2. Piece가 해당 타일에 존재할 경우
-        //2-1. 적일 경우
-        //2-2. 아군일 경우
+
+        //piece가 앞으로 위치할 Tile의 정보 변경
+        selectTIle.nowLocateColor = pieceColor;
+        //모두 끝낸 후 정보 초기화 + 공격타일 설정
+        ClearPieceInfo();
+        SetAttackTile(true);
+
+        ChessManager.chessManager.EndTurn();
     }
 
     private void OnMouseDown()
     {
+        //현재 턴이 아니면 클릭 방지
+        if (ChessManager.chessManager.nowTurnColor != pieceColor)
+            return;
         //1. 선택한 Piece가 있는 상태에서 다른 Piece를 고를 때
         //이전에 선택한 Piece의 이동 가능 타일을 표시한 것들을 초기화
         if (ChessManager.chessManager.nowPiece != null)
@@ -76,6 +86,29 @@ public abstract class Piece : MonoBehaviour
         Debug.Log("MovableTiles Count : " + movableTIles.Count);
     }
 
+    //해당 타일이 존재하는가? -> 인덱스 초과를 확인하기 위해 만든 함수
+    public bool IsAvailableTIle(Vector2Int getTIleVector)
+    {
+        Tile nowTile = null;
+        try
+        {
+            nowTile = ChessManager.chessManager.chessTileList[getTIleVector.x, getTIleVector.y];
+        }
+        catch
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public void SetMovablePiecesSelected()
+    {
+        for(int i =0; i<movableTIles.Count;i++)
+        {
+            movableTIles[i].isSelectedMovalleTile = true;
+        }
+    }
+
     //현재 선택한 Piece의 정보를 초기화합니다.
     void ClearPieceInfo()
     {
@@ -89,7 +122,27 @@ public abstract class Piece : MonoBehaviour
         }
 
         ChessManager.chessManager.nowPiece.movableTIles.Clear();
+        SetPieceSpecialInfo();
 
         ChessManager.chessManager.nowPiece = null;
     }
+
+    //폰 2칸 전진, 앙파상, 캐슬링, 프로모션 등을 컨트롤하기 위한 특수 함수
+    void SetPieceSpecialInfo()
+    {
+        //1. 폰
+        if (ChessManager.chessManager.nowPiece.pieceType == PieceType.WhitePawn || ChessManager.chessManager.nowPiece.pieceType == PieceType.WhitePawn)
+        {
+            //1. 처음 2칸 이동 해제
+            if(ChessManager.chessManager.nowPiece.GetComponent<Pawn>().isFirstMove)
+                ChessManager.chessManager.nowPiece.GetComponent<Pawn>().isFirstMove = false;
+        }
+    }
+
+    public void DebugMovableTiles(List<Tile> getMovableTileList)
+    {
+        for (int i = 0; i < getMovableTileList.Count; i++)
+            Debug.Log(getMovableTileList[i].transform.position);
+    }
+
 }
