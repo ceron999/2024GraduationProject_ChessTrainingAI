@@ -24,7 +24,7 @@ public abstract class Piece : MonoBehaviour
 
     public abstract void FindMovableMoveTiles();                //움직일 수 있는 타일 찾는 함수
 
-    public abstract void SetAttackTile(bool isActive);                       //현재 공격 타일 설정 함수
+    public abstract void SetAttackTile();                       //현재 공격 타일 설정 함수
                                                                              //isActive가 참이면 AttackTile = true;
 
     //Parameter :   isSkip = Piece 이동 모션을 스킵할 것인가?
@@ -35,7 +35,6 @@ public abstract class Piece : MonoBehaviour
         if (!selectTIle.isSelectedMovalleTile)
             return;
 
-        SetAttackTile(false);
         //기존에 존재한 타일 정보 변경
         ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y].nowLocateColor = GameColor.Null;
 
@@ -55,7 +54,6 @@ public abstract class Piece : MonoBehaviour
         selectTIle.nowLocateColor = pieceColor;
         //모두 끝낸 후 정보 초기화 + 공격타일 설정
         ClearPieceInfo();
-        SetAttackTile(true);
 
         ChessManager.chessManager.EndTurn();
     }
@@ -101,6 +99,7 @@ public abstract class Piece : MonoBehaviour
         return true;
     }
 
+    //MovableTiles에 추가된 타일들의 isSelectedMovableTile을 참으로 설정한다. 
     public void SetMovablePiecesSelected()
     {
         for(int i =0; i<movableTIles.Count;i++)
@@ -131,7 +130,7 @@ public abstract class Piece : MonoBehaviour
     void SetPieceSpecialInfo()
     {
         //1. 폰
-        if (ChessManager.chessManager.nowPiece.pieceType == PieceType.WhitePawn || ChessManager.chessManager.nowPiece.pieceType == PieceType.WhitePawn)
+        if (ChessManager.chessManager.nowPiece.pieceType == PieceType.BlackPawn || ChessManager.chessManager.nowPiece.pieceType == PieceType.WhitePawn)
         {
             //1. 처음 2칸 이동 해제
             if(ChessManager.chessManager.nowPiece.GetComponent<Pawn>().isFirstMove)

@@ -377,8 +377,8 @@ public class ChessManager : MonoBehaviour
             whitePiecesParent.GetChild(i).transform.rotation = Quaternion.Euler(180, 0, 0);
             blackPiecesParent.GetChild(i).transform.rotation = Quaternion.Euler(180, 0, 0);
 
-            whitePiecesParent.GetChild(i).GetComponent<Piece>().SetAttackTile(true);
-            blackPiecesParent.GetChild(i).GetComponent<Piece>().SetAttackTile(true);
+            whitePiecesParent.GetChild(i).GetComponent<Piece>().SetAttackTile();
+            blackPiecesParent.GetChild(i).GetComponent<Piece>().SetAttackTile();
         }
     }
 
@@ -414,5 +414,24 @@ public class ChessManager : MonoBehaviour
             nowTurnColor = GameColor.Black;
         else
             nowTurnColor = GameColor.White;
+
+        //SetAttackTiles();
+    }
+
+    void SetAttackTiles()
+    {
+        Piece nowPiece = null;
+
+        for(int i =0; i< blackPiecesParent.childCount; i++)
+        {
+            nowPiece = blackPiecesParent.GetChild(i).GetComponent<Piece>();
+            nowPiece.SetAttackTile();
+        }
+
+        for (int i = 0; i < whitePiecesParent.childCount; i++)
+        {
+            nowPiece = whitePiecesParent.GetChild(i).GetComponent<Piece>();
+            nowPiece.SetAttackTile();
+        }
     }
 }

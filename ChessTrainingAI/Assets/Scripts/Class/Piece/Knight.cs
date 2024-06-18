@@ -9,23 +9,58 @@ public class Knight : Piece
         EvaluateMoveTiles();
     }
 
-    public override void SetAttackTile(bool isActive)
+    public override void SetAttackTile()
     {
-        if (isActive)
+        //1. 이전 공격 타일로 설정한 타일들을 설정 취소한다. 
+        if (attackTIles.Count >= 0)
         {
-            
+            for (int i = 0; i < attackTIles.Count; i++)
+            {
+                attackTIles[i].isAttackedTile = false;
+            }
+            attackTIles.Clear();
         }
 
-        //만약 isActive가 참이면 해당 공격 타일을 재설정
-        //isActive가 거짓이면 현재 공격 타일 false로 만들어 움직일 준비
+        //2. 공격 타일 설정
+        EvaluateAttackTile();
+
+        //3. 설정된 공격 타일의 변수 재설정
         for (int i = 0; i < attackTIles.Count; i++)
         {
-            attackTIles[i].isAttackedTile = isActive;
+            attackTIles[i].isAttackedTile = true;
         }
     }
 
     //(-1.+1)
     void EvaluateMoveTiles()
+    {
+        List<Vector2Int> evaluateVector = new List<Vector2Int>();
+        evaluateVector.Add(nowPos + new Vector2Int(-2, +1));
+        evaluateVector.Add(nowPos + new Vector2Int(-2, -1));
+        evaluateVector.Add(nowPos + new Vector2Int(+2, +1));
+        evaluateVector.Add(nowPos + new Vector2Int(+2, -1));
+        evaluateVector.Add(nowPos + new Vector2Int(-1, +2));
+        evaluateVector.Add(nowPos + new Vector2Int(-1, -2));
+        evaluateVector.Add(nowPos + new Vector2Int(+1, +2));
+        evaluateVector.Add(nowPos + new Vector2Int(+1, -2));
+
+        for (int i = 0; i < evaluateVector.Count; i++)
+        {
+            //해당하는 타일이 존재하지 않으면 return;
+            if (!IsAvailableTIle(evaluateVector[i]))
+                continue;
+
+            if (ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y].nowLocateColor == pieceColor)
+                continue;
+            else 
+                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y]);
+        }
+
+
+        SetMovablePiecesSelected();
+    }
+
+    void EvaluateAttackTile()
     {
         List<Vector2Int> evaluateVector = new List<Vector2Int>();
         evaluateVector.Add(nowPos + new Vector2Int(-2, +1));
@@ -46,11 +81,8 @@ public class Knight : Piece
 
             if (ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y].nowLocateColor == pieceColor)
                 continue;
-            else 
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y]);
+            else
+                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y]);
         }
-
-
-        SetMovablePiecesSelected();
     }
 }

@@ -16,4 +16,9 @@ public class Tile : MonoBehaviour
     {
         availableCircle.SetActive(isActive);
     }
+
+    void EvaluateAttackTile()
+    {
+
+    }
 }
