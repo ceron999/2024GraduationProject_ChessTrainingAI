@@ -33,7 +33,6 @@ public class Pawn : Piece
             for(int i = 0; i<attackTIles.Count; i++)
             {
                 attackTIles[i].isAttackedTile = false;
-                Debug.Log(this.transform.position + " - 삭제되는 공격 pos : " + attackTIles[i].transform.position);
             }
             attackTIles.Clear();
         }
@@ -62,7 +61,6 @@ public class Pawn : Piece
         for (int i =0;i<attackTIles.Count;i++)
         {
             attackTIles[i].isAttackedTile = true;
-            Debug.Log(this.transform.position + " - 공격 pos : " + attackTIles[i].transform.position);
         }
     }
 

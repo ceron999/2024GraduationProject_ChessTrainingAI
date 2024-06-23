@@ -112,16 +112,16 @@ public class ChessManager : MonoBehaviour
         SetPawn(GameColor.White);
         SetKnight(GameColor.White);
         SetBishop(GameColor.White);
-        SetRook(GameColor.White);
         SetQueen(GameColor.White);
         SetKing(GameColor.White);
+        SetRook(GameColor.White);
 
         SetPawn(GameColor.Black);
         SetKnight(GameColor.Black);
         SetBishop(GameColor.Black);
-        SetRook(GameColor.Black);
         SetQueen(GameColor.Black);
         SetKing(GameColor.Black);
+        SetRook(GameColor.Black);
     }
 
     void SetPawn(GameColor getColor)
@@ -274,6 +274,10 @@ public class ChessManager : MonoBehaviour
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.Black;
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.Black;
 
+            King nowKing = GameObject.Find("BlackKing(Clone)").GetComponent<King>();
+            nowKing.nowRooks[0] = piecePrefab1.GetComponent<Rook>();
+            nowKing.nowRooks[1] = piecePrefab2.GetComponent<Rook>();
+
             chessTileList[0, 7].nowLocateColor = getColor;
             chessTileList[7, 7].nowLocateColor = getColor;
         }
@@ -287,10 +291,14 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(0, 0);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(7, 0);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.WhilteRook;
-            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.WhilteRook;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.WhiteRook;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.WhiteRook;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.White;
+
+            King nowKing = GameObject.Find("WhiteKing(Clone)").GetComponent<King>();
+            nowKing.nowRooks[0] = piecePrefab1.GetComponent<Rook>();
+            nowKing.nowRooks[1] = piecePrefab2.GetComponent<Rook>();
 
             chessTileList[0, 0].nowLocateColor = getColor;
             chessTileList[7, 0].nowLocateColor = getColor;

@@ -5,7 +5,7 @@ using UnityEngine;
 public enum PieceType
 {
     Null, 
-    WhitePawn, WhiteKnight, WhiteBishop, WhilteRook, WhiteQueen, WhiteKing, //1~ 6
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing, //1~ 6
     BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing   //7~12
 }
 
@@ -53,6 +53,7 @@ public abstract class Piece : MonoBehaviour
         //piece가 앞으로 위치할 Tile의 정보 변경
         selectTIle.nowLocateColor = pieceColor;
         //모두 끝낸 후 정보 초기화 + 공격타일 설정
+        SetPieceSpecialInfo();
         ClearPieceInfo();
 
         ChessManager.chessManager.EndTurn();
@@ -121,7 +122,6 @@ public abstract class Piece : MonoBehaviour
         }
 
         ChessManager.chessManager.nowPiece.movableTIles.Clear();
-        SetPieceSpecialInfo();
 
         ChessManager.chessManager.nowPiece = null;
     }
@@ -135,6 +135,12 @@ public abstract class Piece : MonoBehaviour
             //1. 처음 2칸 이동 해제
             if(ChessManager.chessManager.nowPiece.GetComponent<Pawn>().isFirstMove)
                 ChessManager.chessManager.nowPiece.GetComponent<Pawn>().isFirstMove = false;
+        }
+
+        else if(ChessManager.chessManager.nowPiece.pieceType == PieceType.BlackRook || ChessManager.chessManager.nowPiece.pieceType == PieceType.WhiteRook)
+        {
+            if (ChessManager.chessManager.nowPiece.GetComponent<Rook>().isFirstMove)
+                ChessManager.chessManager.nowPiece.GetComponent<Rook>().isFirstMove = false;
         }
     }
 
