@@ -8,7 +8,7 @@ public class Pawn : Piece
     public bool isFirstMove = true;                             //처음 2칸을 이동하였는지 확인하는 변수
     public bool isCanEnPassant = false;                        //앙파상으로 피격될 수 있는가?
 
-    public override void FindMovableMoveTiles()
+    public override void FindMovableTiles()
     {
         //흰색 : row가 증가하는 방향 <-> 검은색 : row가 감소하는 방향이 앞임.
         direction = (pieceColor == GameColor.White) ? 1 : -1;

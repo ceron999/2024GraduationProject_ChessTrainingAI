@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bishop : Piece
 {
-    public override void FindMovableMoveTiles()
+    public override void FindMovableTiles()
     {
         //1.전진 방향 확인
         EvaluateMoveTiles();

@@ -6,7 +6,7 @@ public class Rook : Piece
 {
     public bool isFirstMove = true;
 
-    public override void FindMovableMoveTiles()
+    public override void FindMovableTiles()
     {
         //1.전진 방향 확인
         EvaluateMoveTiles();

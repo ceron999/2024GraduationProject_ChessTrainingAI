@@ -5,8 +5,7 @@ using UnityEngine;
 public enum PieceType
 {
     Null, 
-    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing, //1~ 6
-    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing   //7~12
+    Pawn, Knight, Bishop, Rook, Queen, King, //1~ 6
 }
 
 public abstract class Piece : MonoBehaviour
@@ -22,7 +21,7 @@ public abstract class Piece : MonoBehaviour
     //이외 정보
     int pieceLayer = 1 << 8;
 
-    public abstract void FindMovableMoveTiles();                //움직일 수 있는 타일 찾는 함수
+    public abstract void FindMovableTiles();                //움직일 수 있는 타일 찾는 함수
 
     public abstract void SetAttackTile();                       //현재 공격 타일 설정 함수
                                                                              //isActive가 참이면 AttackTile = true;
@@ -74,7 +73,7 @@ public abstract class Piece : MonoBehaviour
         //처음 클릭하면 해당 기물을 선택했다고 표시하고 이동 가능한 타일을 찾음
         ChessManager.chessManager.nowPiece = this;
         isClickPiece = true;
-        FindMovableMoveTiles();
+        FindMovableTiles();
 
         //찾은 타일의 AvailableCircle을 활성화하여 움직일 수 있는 위치를 확인한다.
         for (int i = 0; i < movableTIles.Count; i++)
@@ -130,14 +129,14 @@ public abstract class Piece : MonoBehaviour
     void SetPieceSpecialInfo()
     {
         //1. 폰
-        if (ChessManager.chessManager.nowPiece.pieceType == PieceType.BlackPawn || ChessManager.chessManager.nowPiece.pieceType == PieceType.WhitePawn)
+        if (ChessManager.chessManager.nowPiece.pieceType == PieceType.Pawn)
         {
             //1. 처음 2칸 이동 해제
             if(ChessManager.chessManager.nowPiece.GetComponent<Pawn>().isFirstMove)
                 ChessManager.chessManager.nowPiece.GetComponent<Pawn>().isFirstMove = false;
         }
 
-        else if(ChessManager.chessManager.nowPiece.pieceType == PieceType.BlackRook || ChessManager.chessManager.nowPiece.pieceType == PieceType.WhiteRook)
+        else if(ChessManager.chessManager.nowPiece.pieceType == PieceType.Rook)
         {
             if (ChessManager.chessManager.nowPiece.GetComponent<Rook>().isFirstMove)
                 ChessManager.chessManager.nowPiece.GetComponent<Rook>().isFirstMove = false;

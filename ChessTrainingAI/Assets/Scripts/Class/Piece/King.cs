@@ -11,7 +11,7 @@ public class King : Piece
     public bool isCheck = false;
     public bool isCheckMate = false;
 
-    public override void FindMovableMoveTiles()
+    public override void FindMovableTiles()
     {
         EvaluateMoveTiles();
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Knight : Piece
 {
-    public override void FindMovableMoveTiles()
+    public override void FindMovableTiles()
     {
         EvaluateMoveTiles();
     }
