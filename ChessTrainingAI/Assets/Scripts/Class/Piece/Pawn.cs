@@ -8,119 +8,70 @@ public class Pawn : Piece
     public bool isFirstMove = true;                             //처음 2칸을 이동하였는지 확인하는 변수
     public bool isCanEnPassant = false;                        //앙파상으로 피격될 수 있는가?
 
-    public override void FindMovableTiles()
+    public override void EvaluateMove()
     {
-        //흰색 : row가 증가하는 방향 <-> 검은색 : row가 감소하는 방향이 앞임.
+        // 흰색 : row가 증가하는 방향 <-> 검은색 : row가 감소하는 방향이 앞임.
         direction = (pieceColor == GameColor.White) ? 1 : -1;
 
-        //1.전진 방향 확인
-        EvaluateMoveTiles(direction);
-
-        //2. 공격 확인
-        EvaluateAttackTiles(direction);
-
-        SetMovablePiecesSelected();
-        //DebugMovableTiles(movableTIles);
-    }
-
-    public override void SetAttackTile()
-    {
-        direction = (pieceColor == GameColor.White) ? 1 : -1;
-
-        //1. 이전 공격 타일로 설정한 타일들을 설정 취소한다. 
-        if (attackTIles.Count >= 0)
-        {
-            for(int i = 0; i<attackTIles.Count; i++)
-            {
-                attackTIles[i].isAttackedTile = false;
-            }
-            attackTIles.Clear();
-        }
-
         Tile nowTile = null;
-        Vector2Int attack1Pos = new Vector2Int(nowPos.x - 1, nowPos.y + direction);
-        Vector2Int attack2Pos = new Vector2Int(nowPos.x + 1, nowPos.y + direction);
+        Vector2Int forward1Pos = new Vector2Int(nowPos.x, nowPos.y + direction);
+        Vector2Int forward2Pos = new Vector2Int(nowPos.x, nowPos.y + direction * 2);
 
-        //2. 공격할 수 있는 타일 추가
-        if (IsAvailableTIle(attack1Pos))
-        {
-            nowTile = ChessManager.chessManager.chessTileList[attack1Pos.x, attack1Pos.y];
-            
-            attackTIles.Add(nowTile);
-        }
+        Vector2Int attact1Pos = new Vector2Int(nowPos.x - direction, nowPos.y + direction);    // 좌측 대각선
+        Vector2Int attact2Pos = new Vector2Int(nowPos.x + direction, nowPos.y + direction);    // 우측 대각선
 
-        if (IsAvailableTIle(attack2Pos))
-        {
-            nowTile = ChessManager.chessManager.chessTileList[attack2Pos.x, attack2Pos.y];
-            
-            attackTIles.Add(nowTile);
-        }
-
-        //만약 isActive가 참이면 해당 공격 타일을 재설정
-        //isActive가 거짓이면 현재 공격 타일 false로 만들어 움직일 준비
-        for (int i =0;i<attackTIles.Count;i++)
-        {
-            attackTIles[i].isAttackedTile = true;
-        }
-    }
-
-    void EvaluateMoveTiles(int getDir)
-    {
-        Tile nowTile = null;
-        Vector2Int forward1Pos = new Vector2Int(nowPos.x, nowPos.y + getDir);
-        Vector2Int forward2Pos = new Vector2Int(nowPos.x, nowPos.y + getDir * 2);
-
+        // 1. 이동 타일 확인
         //전방 2칸 이동 가능?
         if (isFirstMove)
         {
-            nowTile = ChessManager.chessManager.chessTileList[forward2Pos.x, forward2Pos.y];
+            nowTile = ChessManager.instance.chessTileList[forward2Pos.x, forward2Pos.y];
 
             //해당 위치에 기물이 존재하지 않으면 movableTIles에 추가
-            if (nowTile.nowLocateColor == GameColor.Null)
-                movableTIles.Add(nowTile);
+            if (nowTile.locatedPiece == null)
+                movableTIleList.Add(nowTile);
         }
 
-        //전방 1칸 이동가능?
+        //전방 1칸 이동 가능?
         if (IsAvailableTIle(forward1Pos))
         {
-            nowTile = ChessManager.chessManager.chessTileList[forward1Pos.x, forward1Pos.y];
+            nowTile = ChessManager.instance.chessTileList[forward1Pos.x, forward1Pos.y];
 
             //해당 위치에 기물이 존재하지 않으면 movableTIles에 추가
-            if (nowTile.nowLocateColor == GameColor.Null)
-                movableTIles.Add(nowTile);
+            if (nowTile.locatedPiece == null)
+                movableTIleList.Add(nowTile);
         }
-    }
 
-    void EvaluateAttackTiles(int getDir)
-    {
-        Tile nowTile = null;
-        Vector2Int attack1Pos = new Vector2Int(nowPos.x - 1, nowPos.y + getDir);
-        Vector2Int attack2Pos = new Vector2Int(nowPos.x + 1, nowPos.y + getDir);
+        // 2. 공격 기물 확인
+        // 좌측 대각선 1칸 공격 가능?
+        if (IsAvailableTIle(attact1Pos))
+        {
+            nowTile = ChessManager.instance.chessTileList[attact1Pos.x, attact1Pos.y];
 
-        //1. 대각선에 적 기물이 존재하는가?
-        if(IsAvailableTIle(attack1Pos))
-        {
-            nowTile = ChessManager.chessManager.chessTileList[attack1Pos.x, attack1Pos.y];
-            if(nowTile.nowLocateColor != pieceColor && nowTile.nowLocateColor != GameColor.Null)
+            //해당 위치의 기물 색 != 선택된 기물의 색 -> 추가
+            if (nowTile.locatedPiece != null)
             {
-                movableTIles.Add(nowTile);
-            }
-        }
-        if(IsAvailableTIle(attack2Pos))
-        {
-            nowTile = ChessManager.chessManager.chessTileList[attack2Pos.x, attack2Pos.y];
-            if (nowTile.nowLocateColor != pieceColor && nowTile.nowLocateColor != GameColor.Null)
-            {
-                movableTIles.Add(nowTile);
+                if (nowTile.locatedPiece.pieceColor != pieceColor)
+                {
+                    movableTIleList.Add(nowTile);
+                    attackPieceList.Add(nowTile.locatedPiece);
+                }
             }
         }
 
-        //2. 앙파상인가?
-    }
+        // 좌측 대각선 1칸 공격 가능?
+        if (IsAvailableTIle(attact2Pos))
+        {
+            nowTile = ChessManager.instance.chessTileList[attact2Pos.x, attact2Pos.y];
 
-    //Pawn이 마지막 row에 도착하면 승격한다.
-    public void PromotionPawn()
-    {
-
+            //해당 위치의 기물 색 != 선택된 기물의 색 -> 추가
+            if (nowTile.locatedPiece != null)
+            {
+                if (nowTile.locatedPiece.pieceColor != pieceColor)
+                {
+                    movableTIleList.Add(nowTile);
+                    attackPieceList.Add(nowTile.locatedPiece);
+                }
+            }
+        }
     }
 }

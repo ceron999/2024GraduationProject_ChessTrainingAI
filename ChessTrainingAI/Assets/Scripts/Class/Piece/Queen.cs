@@ -4,34 +4,7 @@ using UnityEngine;
 
 public class Queen : Piece
 {
-    public override void FindMovableTiles()
-    {
-        EvaluateMoveTiles();
-    }
-
-    public override void SetAttackTile()
-    {
-        //1. 이전 공격 타일로 설정한 타일들을 설정 취소한다. 
-        if (attackTIles.Count >= 0)
-        {
-            for (int i = 0; i < attackTIles.Count; i++)
-            {
-                attackTIles[i].isAttackedTile = false;
-            }
-            attackTIles.Clear();
-        }
-
-        //2. 공격 타일 설정
-        EvaluateAttackTile();
-
-        //3. 설정된 공격 타일의 변수 재설정
-        for (int i = 0; i < attackTIles.Count; i++)
-        {
-            attackTIles[i].isAttackedTile = true;
-        }
-    }
-
-    void EvaluateMoveTiles()
+    public override void EvaluateMove()
     {
         EvaluateLeftMoveTiles();
         EvaluateRightMoveTiles();
@@ -41,22 +14,37 @@ public class Queen : Piece
         EvaluateRightUpMoveTiles();
         EvaluateLeftDownMoveTiles();
         EvaluateRightDownMoveTiles();
-
-        SetMovablePiecesSelected();
     }
 
+    #region 수직 이동
     void EvaluateLeftMoveTiles()
     {
         for (int i = 1; nowPos.x - i >= 0; i++)
         {
-            if (ChessManager.chessManager.chessTileList[nowPos.x - i, nowPos.y].nowLocateColor == pieceColor)
+            Vector2Int targetVector = new Vector2Int(nowPos.x - i, nowPos.y);
+
+            // 0. 해당 타일이 존재하지 않으면 중단
+            if (!IsAvailableTIle(targetVector))
                 break;
-            else if (ChessManager.chessManager.chessTileList[nowPos.x - i, nowPos.y].nowLocateColor == GameColor.Null)
-                movableTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x - i, nowPos.y]);
+
+            // 1. 해당 타일이 비어있으면 이동 타일로 추가
+            if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece == null)
+            {
+                movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+            }
             else
             {
-                movableTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x - i, nowPos.y]);
-                break;
+                // 2. 해당 타일의 기물의 색 == 선택한 기물의 색이면 넘어감
+                if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece.pieceColor == pieceColor)
+                    break;
+
+                // 3. 해당 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
+                else
+                {
+                    attackPieceList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                    break;
+                }
             }
         }
     }
@@ -65,14 +53,30 @@ public class Queen : Piece
     {
         for (int i = 1; nowPos.x + i <= 7; i++)
         {
-            if (ChessManager.chessManager.chessTileList[nowPos.x + i, nowPos.y].nowLocateColor == pieceColor)
+            Vector2Int targetVector = new Vector2Int(nowPos.x + i, nowPos.y);
+
+            // 0. 해당 타일이 존재하지 않으면 중단
+            if (!IsAvailableTIle(targetVector))
                 break;
-            else if (ChessManager.chessManager.chessTileList[nowPos.x + i, nowPos.y].nowLocateColor == GameColor.Null)
-                movableTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x + i, nowPos.y]);
+
+            // 1. 해당 타일이 비어있으면 이동 타일로 추가
+            if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece == null)
+            {
+                movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+            }
             else
             {
-                movableTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x + i, nowPos.y]);
-                break;
+                // 2. 해당 타일의 기물의 색 == 선택한 기물의 색이면 넘어감
+                if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece.pieceColor == pieceColor)
+                    break;
+
+                // 3. 해당 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
+                else
+                {
+                    attackPieceList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                    break;
+                }
             }
         }
     }
@@ -81,53 +85,96 @@ public class Queen : Piece
     {
         for (int i = 1; nowPos.y + i <= 7; i++)
         {
-            if (ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + i].nowLocateColor == pieceColor)
+            Vector2Int targetVector = new Vector2Int(nowPos.x, nowPos.y + i);
+
+            // 0. 해당 타일이 존재하지 않으면 중단
+            if (!IsAvailableTIle(targetVector))
                 break;
-            else if (ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + i].nowLocateColor == GameColor.Null)
-                movableTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + i]);
+
+            // 1. 해당 타일이 비어있으면 이동 타일로 추가
+            if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece == null)
+            {
+                movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+            }
             else
             {
-                movableTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + i]);
-                break;
+                // 2. 해당 타일의 기물의 색 == 선택한 기물의 색이면 넘어감
+                if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece.pieceColor == pieceColor)
+                    break;
+
+                // 3. 해당 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
+                else
+                {
+                    attackPieceList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                    break;
+                }
             }
         }
     }
 
     void EvaluateDownMoveTiles()
     {
-        for (int i = 1; nowPos.y - i >= 0; i++)
+        for (int i = 1; nowPos.y + i <= 7; i++)
         {
-            if (ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y - i].nowLocateColor == pieceColor)
+            Vector2Int targetVector = new Vector2Int(nowPos.x, nowPos.y - i);
+
+            // 0. 해당 타일이 존재하지 않으면 중단
+            if (!IsAvailableTIle(targetVector))
                 break;
-            else if (ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y - i].nowLocateColor == GameColor.Null)
-                movableTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y - i]);
+
+            // 1. 해당 타일이 비어있으면 이동 타일로 추가
+            if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece == null)
+            {
+                movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+            }
             else
             {
-                movableTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y - i]);
-                break;
+                // 2. 해당 타일의 기물의 색 == 선택한 기물의 색이면 넘어감
+                if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece.pieceColor == pieceColor)
+                    break;
+
+                // 3. 해당 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
+                else
+                {
+                    attackPieceList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                    break;
+                }
             }
         }
     }
+    #endregion
 
+    #region 대각선 이동
+    //(-1.+1)
     void EvaluateLeftUpMoveTiles()
     {
-        Vector2Int evaluateVector = nowPos;
+        Vector2Int targetVector = nowPos;
         for (int i = 1; ; i++)
         {
-            evaluateVector = new Vector2Int(nowPos.x - i, nowPos.y + i);
+            targetVector = new Vector2Int(nowPos.x - i, nowPos.y + i);
 
-            //해당하는 타일이 존재하지 않으면 return;
-            if (!IsAvailableTIle(evaluateVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
 
-            if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == GameColor.Null)
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
+            // 2. 타일의 기물이 없으면 이동 타일 추가
+            if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece == null)
+                movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
             else
             {
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-                break;
+                // 3. 타일의 기물 색 == 선택한 기물의 색이면 넘어감
+                if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece.pieceColor == pieceColor)
+                    break;
+
+                // 4. 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
+                else
+                {
+                    attackPieceList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                    break;
+                }
             }
         }
     }
@@ -135,23 +182,31 @@ public class Queen : Piece
     //(+1.+1)
     void EvaluateRightUpMoveTiles()
     {
-        Vector2Int evaluateVector = nowPos;
+        Vector2Int targetVector = nowPos;
         for (int i = 1; ; i++)
         {
-            evaluateVector = new Vector2Int(nowPos.x + i, nowPos.y + i);
+            targetVector = new Vector2Int(nowPos.x + i, nowPos.y + i);
 
-            //해당하는 타일이 존재하지 않으면 return;
-            if (!IsAvailableTIle(evaluateVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
 
-            if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == GameColor.Null)
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
+            // 2. 타일의 기물이 없으면 이동 타일 추가
+            if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece == null)
+                movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
             else
             {
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-                break;
+                // 3. 타일의 기물 색 == 선택한 기물의 색이면 넘어감
+                if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece.pieceColor == pieceColor)
+                    break;
+
+                // 4. 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
+                else
+                {
+                    attackPieceList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                    break;
+                }
             }
         }
     }
@@ -159,23 +214,31 @@ public class Queen : Piece
     //(-1.-1)
     void EvaluateLeftDownMoveTiles()
     {
-        Vector2Int evaluateVector = nowPos;
+        Vector2Int targetVector = nowPos;
         for (int i = 1; ; i++)
         {
-            evaluateVector = new Vector2Int(nowPos.x - i, nowPos.y - i);
+            targetVector = new Vector2Int(nowPos.x - i, nowPos.y - i);
 
-            //해당하는 타일이 존재하지 않으면 return;
-            if (!IsAvailableTIle(evaluateVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
 
-            if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == GameColor.Null)
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
+            // 2. 타일의 기물이 없으면 이동 타일 추가
+            if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece == null)
+                movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
             else
             {
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-                break;
+                // 3. 타일의 기물 색 == 선택한 기물의 색이면 넘어감
+                if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece.pieceColor == pieceColor)
+                    break;
+
+                // 4. 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
+                else
+                {
+                    attackPieceList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                    break;
+                }
             }
         }
     }
@@ -183,157 +246,33 @@ public class Queen : Piece
     //(+1.-1)
     void EvaluateRightDownMoveTiles()
     {
-        Vector2Int evaluateVector = nowPos;
+        Vector2Int targetVector = nowPos;
         for (int i = 1; ; i++)
         {
-            evaluateVector = new Vector2Int(nowPos.x + i, nowPos.y - i);
+            targetVector = new Vector2Int(nowPos.x + i, nowPos.y - i);
 
-            //해당하는 타일이 존재하지 않으면 return;
-            if (!IsAvailableTIle(evaluateVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
 
-            if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == GameColor.Null)
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
+            // 2. 타일의 기물이 없으면 이동 타일 추가
+            if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece == null)
+                movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
             else
             {
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-                break;
+                // 3. 타일의 기물 색 == 선택한 기물의 색이면 넘어감
+                if (ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece.pieceColor == pieceColor)
+                    break;
+
+                // 4. 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
+                else
+                {
+                    attackPieceList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y].locatedPiece);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                    break;
+                }
             }
         }
     }
-
-    void EvaluateAttackTile()
-    {
-        Vector2Int evaluateVector = nowPos;
-
-        for (int i = 1; nowPos.x - i >= 0; i++)
-        {
-            if (ChessManager.chessManager.chessTileList[nowPos.x - i, nowPos.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[nowPos.x - i, nowPos.y].nowLocateColor == GameColor.Null)
-                attackTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x - i, nowPos.y]);
-            else
-            {
-                attackTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x - i, nowPos.y]);
-                break;
-            }
-        }
-
-        for (int i = 1; nowPos.x + i <= 7; i++)
-        {
-            if (ChessManager.chessManager.chessTileList[nowPos.x + i, nowPos.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[nowPos.x + i, nowPos.y].nowLocateColor == GameColor.Null)
-                attackTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x + i, nowPos.y]);
-            else
-            {
-                attackTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x + i, nowPos.y]);
-                break;
-            }
-        }
-
-        for (int i = 1; nowPos.y + i <= 7; i++)
-        {
-            if (ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + i].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + i].nowLocateColor == GameColor.Null)
-                attackTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + i]);
-            else
-            {
-                attackTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y + i]);
-                break;
-            }
-        }
-
-        for (int i = 1; nowPos.y - i >= 0; i++)
-        {
-            if (ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y - i].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y - i].nowLocateColor == GameColor.Null)
-                attackTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y - i]);
-            else
-            {
-                attackTIles.Add(ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y - i]);
-                break;
-            }
-        }
-
-        for (int i = 1; ; i++)
-        {
-            evaluateVector = new Vector2Int(nowPos.x - i, nowPos.y + i);
-
-            //해당하는 타일이 존재하지 않으면 return;
-            if (!IsAvailableTIle(evaluateVector))
-                break;
-
-            if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == GameColor.Null)
-                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-            else
-            {
-                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-                break;
-            }
-        }
-
-        for (int i = 1; ; i++)
-        {
-            evaluateVector = new Vector2Int(nowPos.x + i, nowPos.y + i);
-
-            //해당하는 타일이 존재하지 않으면 return;
-            if (!IsAvailableTIle(evaluateVector))
-                break;
-
-            if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == GameColor.Null)
-                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-            else
-            {
-                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-                break;
-            }
-        }
-
-        for (int i = 1; ; i++)
-        {
-            evaluateVector = new Vector2Int(nowPos.x - i, nowPos.y - i);
-
-            //해당하는 타일이 존재하지 않으면 return;
-            if (!IsAvailableTIle(evaluateVector))
-                break;
-
-            if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == GameColor.Null)
-                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-            else
-            {
-                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-                break;
-            }
-        }
-
-        for (int i = 1; ; i++)
-        {
-            evaluateVector = new Vector2Int(nowPos.x + i, nowPos.y - i);
-
-            //해당하는 타일이 존재하지 않으면 return;
-            if (!IsAvailableTIle(evaluateVector))
-                break;
-
-            if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == pieceColor)
-                break;
-            else if (ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y].nowLocateColor == GameColor.Null)
-                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-            else
-            {
-                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector.x, evaluateVector.y]);
-                break;
-            }
-        }
-    }
+    #endregion
 }

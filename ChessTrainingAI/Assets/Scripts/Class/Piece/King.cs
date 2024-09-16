@@ -11,34 +11,7 @@ public class King : Piece
     public bool isCheck = false;
     public bool isCheckMate = false;
 
-    public override void FindMovableTiles()
-    {
-        EvaluateMoveTiles();
-    }
-
-    public override void SetAttackTile()
-    {
-        //1. 이전 공격 타일로 설정한 타일들을 설정 취소한다. 
-        if (attackTIles.Count >= 0)
-        {
-            for (int i = 0; i < attackTIles.Count; i++)
-            {
-                attackTIles[i].isAttackedTile = false;
-            }
-            attackTIles.Clear();
-        }
-
-        //2. 공격 타일 설정
-        EvaluateAttackTile();
-
-        //3. 설정된 공격 타일의 변수 재설정
-        for (int i = 0; i < attackTIles.Count; i++)
-        {
-            attackTIles[i].isAttackedTile = true;
-        }
-    }
-
-    void EvaluateMoveTiles()
+    public override void EvaluateMove()
     {
         if (isFirstMove)
         {
@@ -58,49 +31,74 @@ public class King : Piece
 
         for (int i = 0; i < evaluateVector.Count; i++)
         {
-            //해당하는 타일이 존재하지 않으면 return;
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
             if (!IsAvailableTIle(evaluateVector[i]))
                 continue;
 
-            //공격당하는 타일의 경우 continue
-            if (ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y].isAttackedTile)
-                continue;
+            // 2. 해당 기물위치에 기물이 있으면 확인
+            if(ChessManager.instance.chessTileList[evaluateVector[i].x, evaluateVector[i].y].locatedPiece != null)
+            {
+                // 2-1. 해당 타일 기물의 색 == 선택한 기물의 색이면 넘어감
+                if (ChessManager.instance.chessTileList[evaluateVector[i].x, evaluateVector[i].y].locatedPiece.pieceColor == pieceColor)
+                    continue;
 
-            if (ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y].nowLocateColor == pieceColor)
-                continue;
+                else
+                {
+                    // 2-2. 해당 위치로 이동했을 때 킹이 공격당하면 넘어감
+                    if (ChessManager.instance.isCheck)
+                        continue;
 
+                    // 2-3. 해당 위치로 이동했을 때 킹이 공격당하지 않는다면 공격 기물 추가 및 이동 타일 추가
+                    else
+                    {
+                        attackPieceList.Add(ChessManager.instance.chessTileList[evaluateVector[i].x, evaluateVector[i].y].locatedPiece);
+                        movableTIleList.Add(ChessManager.instance.chessTileList[evaluateVector[i].x, evaluateVector[i].y]);
+                    }
+                }
+            }
             else
-                movableTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y]);
+            {
+                // 3. 해당 타일에 기물이 존재하지 않았을 경우
+                // 3-1. 해당 위치로 이동했을 때 킹이 공격당하면 넘어감
+                if (ChessManager.instance.isCheck)
+                    continue;
+                
+                // 2-3. 해당 위치로 이동했을 때 킹이 공격당하지 않는다면 이동 타일 추가
+                else
+                {
+                    movableTIleList.Add(ChessManager.instance.chessTileList[evaluateVector[i].x, evaluateVector[i].y]);
+                }
+            }
         }
-
-
-        SetMovablePiecesSelected();
+    }
+    void EvaluateCastling()
+    {
+        EvaluateKingSideCastling();
+        EvaluateQueenSideCastling();
     }
 
     void EvaluateKingSideCastling()
     {
+        // 1. 킹 체크 상태면 캐슬링 불가
+        if (ChessManager.instance.isCheck)
+            return;
+
         List<Vector2Int> evaluateRightVector = new List<Vector2Int>();
 
         evaluateRightVector.Add(nowPos + new Vector2Int(1, 0));
         evaluateRightVector.Add(nowPos + new Vector2Int(2, 0)); 
-        evaluateRightVector.Add(nowPos + new Vector2Int(3, 0));
 
-        Vector2Int nowVector;
-        int count = (pieceColor == GameColor.White) ? 2 : 3;
-
-        for (int i =0; i< count; i++)
+        for (int i =0; i< evaluateRightVector.Count; i++)
         {
-            Debug.Log(" 확인하는 타일 : " +  evaluateRightVector[i]);
-            nowVector = evaluateRightVector[i];
-
-            if (ChessManager.chessManager.chessTileList[nowVector.x, nowVector.y].nowLocateColor != GameColor.Null)
+            // 2. 만일 킹과 룩 사이에 기물이 존재하면 캐슬링 불가능하므로 빠져나감
+            if (ChessManager.instance.chessTileList[evaluateRightVector[i].x, evaluateRightVector[i].y].locatedPiece != null)
                 break;
-
-            //마지막 Rook 처음 움직이는지 확인
-            if (i == count - 1)
+            
+            // 3. 마지막 Rook 처음 움직이는지 확인
+            if (i == evaluateRightVector.Count - 1)
             {
                 if (nowRooks[1].isFirstMove)
-                    movableTIles.Add(ChessManager.chessManager.chessTileList[6, nowPos.y]);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[6, nowPos.y]);
             }
         }
 
@@ -109,55 +107,30 @@ public class King : Piece
 
     void EvaluateQueenSideCastling()
     {
+        // 1. 킹 체크 상태면 캐슬링 불가
+        if (ChessManager.instance.isCheck)
+            return;
+
         List<Vector2Int> evaluateLeftVector = new List<Vector2Int>();
 
         evaluateLeftVector.Add(nowPos + new Vector2Int(-1, 0));
         evaluateLeftVector.Add(nowPos + new Vector2Int(-2, 0));
         evaluateLeftVector.Add(nowPos + new Vector2Int(-3, 0));
 
-        Vector2Int nowVector = evaluateLeftVector[0];
-
         for (int i = 0; i < evaluateLeftVector.Count; i++)
         {
-            nowVector = evaluateLeftVector[i];
-
-            if (ChessManager.chessManager.chessTileList[nowVector.x, nowVector.y].nowLocateColor != GameColor.Null)
+            // 2. 만일 킹과 룩 사이에 기물이 존재하면 캐슬링 불가능하므로 빠져나감
+            if (ChessManager.instance.chessTileList[evaluateLeftVector[i].x, evaluateLeftVector[i].y].locatedPiece != null)
                 break;
 
-            //마지막 Rook 처음 움직이는지 확인
+            // 3. 마지막 Rook 처음 움직이는지 확인
             if (i == evaluateLeftVector.Count - 1)
             {
                 if (nowRooks[0].isFirstMove)
-                    movableTIles.Add(ChessManager.chessManager.chessTileList[1, nowPos.y]);
+                    movableTIleList.Add(ChessManager.instance.chessTileList[2, nowPos.y]);
             }
         }
 
         return;
-    }
-
-    void EvaluateAttackTile()
-    {
-        List<Vector2Int> evaluateVector = new List<Vector2Int>();
-        evaluateVector.Add(nowPos + new Vector2Int(-1, +1));
-        evaluateVector.Add(nowPos + new Vector2Int(-1, -1));
-        evaluateVector.Add(nowPos + new Vector2Int(+1, +1));
-        evaluateVector.Add(nowPos + new Vector2Int(+1, -1));
-        evaluateVector.Add(nowPos + new Vector2Int(0, +1));
-        evaluateVector.Add(nowPos + new Vector2Int(0, -1));
-        evaluateVector.Add(nowPos + new Vector2Int(+1, 0));
-        evaluateVector.Add(nowPos + new Vector2Int(-1, 0));
-
-        for (int i = 0; i < evaluateVector.Count; i++)
-        {
-            //해당하는 타일이 존재하지 않으면 return;
-            if (!IsAvailableTIle(evaluateVector[i]))
-                continue;
-
-            if (ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y].nowLocateColor == pieceColor)
-                continue;
-
-            else
-                attackTIles.Add(ChessManager.chessManager.chessTileList[evaluateVector[i].x, evaluateVector[i].y]);
-        }
     }
 }

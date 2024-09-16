@@ -9,88 +9,92 @@ public enum PieceType
 }
 
 public abstract class Piece : MonoBehaviour
-{ 
+{
+    #region 기물 정보
+    [Header("기물 정보")]
     public PieceType pieceType;
     public GameColor pieceColor;
+    #endregion
+
+    [Header("기물 이동 정보 리스트")]
     public Vector2Int nowPos;
-    public List<Tile> movableTIles = null;                      //현재 위치에서 이동 가능한 타일
-    public List<Tile> attackTIles = null;                      //현재 위치에서 이동 가능한 타일
+    public List<Tile> movableTIleList = null;                      //현재 위치에서 이동 가능한 타일
+    public List<Piece> attackPieceList = null;                      //현재 위치에서 이동 가능한 타일
 
-    public bool isClickPiece = false;                           //현재 이 기물이 선택되었는가?
+    public abstract void EvaluateMove();                //움직일 수 있는 타일 찾는 함수
 
-    //이외 정보
-    int pieceLayer = 1 << 8;
-
-    public abstract void FindMovableTiles();                //움직일 수 있는 타일 찾는 함수
-
-    public abstract void SetAttackTile();                       //현재 공격 타일 설정 함수
-                                                                             //isActive가 참이면 AttackTile = true;
-
-    //Parameter :   isSkip = Piece 이동 모션을 스킵할 것인가?
-    //              selectTile = ChessManager에서 마우스로 선택한 Tile
+    /// <summary>
+    /// 기물 이동하는 함수
+    /// </summary>
+    /// <param name="selectTIle"> ChessManager에서 마우스로 선택한 Tile </param>
+    /// <param name="isSkip"> Piece 이동 모션을 스킵할 것인가? </param>
     public void Move(Tile selectTIle, bool isSkip = true)
     {
-        //0. 이동 가능한 타일로 선택되어져 있는가?
-        if (!selectTIle.isSelectedMovalleTile)
+        // 0. 받아온 타일이 현재 이동 가능 타일 중 하나인가?
+        if (movableTIleList.Count == 0)
             return;
 
-        //기존에 존재한 타일 정보 변경
-        ChessManager.chessManager.chessTileList[nowPos.x, nowPos.y].nowLocateColor = GameColor.Null;
-
-        //현재 Piece 정보 변경
-        this.transform.position = selectTIle.transform.position;
-        nowPos = new Vector2Int((int)selectTIle.transform.position.x, (int)selectTIle.transform.position.y);
-
-        //해당 타일에 적 piece가 존재할 경우 해당 기물 파괴
-        if (selectTIle.nowLocateColor != GameColor.Null)
+        for (int i = 0; i < movableTIleList.Count; i++)
         {
-            Collider[] findPiece = Physics.OverlapSphere(this.transform.position, 0.1f, pieceLayer);
-            if (findPiece[0].name != this.name)
-                Destroy(findPiece[0].gameObject);
+            // 이동 가능한 타일이면 반복문 깨고 나와
+            if (movableTIleList[i].tileName == selectTIle.tileName)
+                break;
+
+            // 마지막 타일까지 검사했는데 받아온 타일이 안나오면 리턴
+            if (i == movableTIleList.Count - 1)
+                return;
         }
 
-        //piece가 앞으로 위치할 Tile의 정보 변경
-        selectTIle.nowLocateColor = pieceColor;
-        //모두 끝낸 후 정보 초기화 + 공격타일 설정
-        SetPieceSpecialInfo();
-        ClearPieceInfo();
+        // 기존 타일 정보 받아오기
+        Tile nowTIle = ChessManager.instance.chessTileList[nowPos.x, nowPos.y];
 
-        ChessManager.chessManager.EndTurn();
+        // 폰이나 킹, 룩의 경우 특수 움직임 설정
+        SetPieceSpecialInfo();
+
+        // 1. 현재 Piece 위치 변경
+        this.transform.position = selectTIle.transform.position;
+
+        // 2. 해당 타일에 적 piece가 존재할 경우 해당 기물 파괴하고 정보 재설정
+        if(selectTIle.locatedPiece != null)
+        {
+            Destroy(selectTIle.locatedPiece.gameObject);
+
+            nowTIle.locatedPiece = null;
+        }
+        selectTIle.locatedPiece = this.GetComponent<Piece>();
+        nowPos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+
+        //모두 끝낸 후 턴 종료
+        ChessManager.instance.turnEnd?.Invoke();
     }
 
     private void OnMouseDown()
     {
-        //현재 턴이 아니면 클릭 방지
-        if (ChessManager.chessManager.nowTurnColor != pieceColor)
+        // 현재 턴이 아니면 클릭 방지
+        if (ChessManager.instance.nowTurnColor != pieceColor)
             return;
-        //1. 선택한 Piece가 있는 상태에서 다른 Piece를 고를 때
-        //이전에 선택한 Piece의 이동 가능 타일을 표시한 것들을 초기화
-        if (ChessManager.chessManager.nowPiece != null)
+
+        // 1. 이전 기물과 현재 기물 정리
+        Piece pastPiece = ChessManager.instance.nowPiece;
+        ChessManager.instance.nowPiece = this;
+
+        // 2. 이전 기물의 원 제거 + 현재 기물의 원 표시
+        for (int i = 0; i < movableTIleList.Count; i++)
         {
-            ClearPieceInfo();
+            if(pastPiece != null)
+                pastPiece.movableTIleList[i].SetAvailableCircle(false);
+            movableTIleList[i].SetAvailableCircle(true);
         }
-
-        //처음 클릭하면 해당 기물을 선택했다고 표시하고 이동 가능한 타일을 찾음
-        ChessManager.chessManager.nowPiece = this;
-        isClickPiece = true;
-        FindMovableTiles();
-
-        //찾은 타일의 AvailableCircle을 활성화하여 움직일 수 있는 위치를 확인한다.
-        for (int i = 0; i < movableTIles.Count; i++)
-        {
-            movableTIles[i].SetAvailableCircle(true);
-        }
-
-        Debug.Log("MovableTiles Count : " + movableTIles.Count);
     }
 
+    #region 타일 이동 가능 및 공격 기물 확인 함수
     //해당 타일이 존재하는가? -> 인덱스 초과를 확인하기 위해 만든 함수
     public bool IsAvailableTIle(Vector2Int getTIleVector)
     {
         Tile nowTile = null;
         try
         {
-            nowTile = ChessManager.chessManager.chessTileList[getTIleVector.x, getTIleVector.y];
+            nowTile = ChessManager.instance.chessTileList[getTIleVector.x, getTIleVector.y];
         }
         catch
         {
@@ -98,55 +102,26 @@ public abstract class Piece : MonoBehaviour
         }
         return true;
     }
+    #endregion
 
-    //MovableTiles에 추가된 타일들의 isSelectedMovableTile을 참으로 설정한다. 
-    public void SetMovablePiecesSelected()
-    {
-        for(int i =0; i<movableTIles.Count;i++)
-        {
-            movableTIles[i].isSelectedMovalleTile = true;
-        }
-    }
-
-    //현재 선택한 Piece의 정보를 초기화합니다.
-    void ClearPieceInfo()
-    {
-        ChessManager.chessManager.nowPiece.isClickPiece = false;
-
-        //AvailableCircle을 active 상태를 다시 false로 변환
-        for (int i = 0; i < ChessManager.chessManager.nowPiece.movableTIles.Count; i++)
-        {
-            ChessManager.chessManager.nowPiece.movableTIles[i].SetAvailableCircle(false);
-            ChessManager.chessManager.nowPiece.movableTIles[i].isSelectedMovalleTile = false;
-        }
-
-        ChessManager.chessManager.nowPiece.movableTIles.Clear();
-
-        ChessManager.chessManager.nowPiece = null;
-    }
+    #region 특수 정보 확인
 
     //폰 2칸 전진, 앙파상, 캐슬링, 프로모션 등을 컨트롤하기 위한 특수 함수
     void SetPieceSpecialInfo()
     {
         //1. 폰
-        if (ChessManager.chessManager.nowPiece.pieceType == PieceType.Pawn)
+        if (ChessManager.instance.nowPiece.pieceType == PieceType.Pawn)
         {
             //1. 처음 2칸 이동 해제
-            if(ChessManager.chessManager.nowPiece.GetComponent<Pawn>().isFirstMove)
-                ChessManager.chessManager.nowPiece.GetComponent<Pawn>().isFirstMove = false;
+            if(ChessManager.instance.nowPiece.GetComponent<Pawn>().isFirstMove)
+                ChessManager.instance.nowPiece.GetComponent<Pawn>().isFirstMove = false;
         }
 
-        else if(ChessManager.chessManager.nowPiece.pieceType == PieceType.Rook)
+        else if(ChessManager.instance.nowPiece.pieceType == PieceType.Rook)
         {
-            if (ChessManager.chessManager.nowPiece.GetComponent<Rook>().isFirstMove)
-                ChessManager.chessManager.nowPiece.GetComponent<Rook>().isFirstMove = false;
+            if (ChessManager.instance.nowPiece.GetComponent<Rook>().isFirstMove)
+                ChessManager.instance.nowPiece.GetComponent<Rook>().isFirstMove = false;
         }
     }
-
-    public void DebugMovableTiles(List<Tile> getMovableTileList)
-    {
-        for (int i = 0; i < getMovableTileList.Count; i++)
-            Debug.Log(getMovableTileList[i].transform.position);
-    }
-
+    #endregion
 }

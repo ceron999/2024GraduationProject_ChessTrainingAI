@@ -11,10 +11,9 @@ public enum GameColor
 
 public class ChessManager : MonoBehaviour
 {
-    public static ChessManager chessManager;
+    public static ChessManager instance;
 
-    [SerializeField]
-    Camera mainCamera;          //흑백에 따라 보는 관점 바꾸려고 가져온 카메라
+    public Camera mainCamera;          //흑백에 따라 보는 관점 바꾸려고 가져온 카메라
 
     #region 타일, 보드판 정보
     [SerializeField]
@@ -58,19 +57,23 @@ public class ChessManager : MonoBehaviour
 
     public GameColor playerColor = GameColor.Null;
     public GameColor nowTurnColor = GameColor.White;
-    RaycastHit2D hit;
     public Piece nowPiece;
 
     #region 턴 이벤트
-    UnityEvent turnStart;
-    UnityEvent turnEnd;
+    public UnityEvent gameStart;
+    public UnityEvent turnEnd;
+
+    public UnityEvent check;
+    public UnityEvent checkmate;
+    public bool isCheck = false;
+    public bool isCheckmate = false;
     #endregion 턴 이벤트
 
     void Awake()
     {
-        if (chessManager == null)
+        if (instance == null)
         {
-            chessManager = this;
+            instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -87,20 +90,17 @@ public class ChessManager : MonoBehaviour
         SetPlayerColor();
 
         // 턴 함수 설정
-        turnStart.AddListener(StartTurn);
+        gameStart.AddListener(GameStart);
         turnEnd.AddListener(EndTurn);
+        check.AddListener(Check);
+        checkmate.AddListener(Checkmate);
 
         // 게임 시작
         nowTurnColor = GameColor.White;
-        turnStart?.Invoke();
+        gameStart?.Invoke();
     }
 
-    private void Update()
-    {
-        MovePiece();
-    }
-
-    #region Set Chess Board
+    #region 체스 타일, 기물 설정
     void SetChessBoard()
     {
         bool colorChange = true;
@@ -161,7 +161,7 @@ public class ChessManager : MonoBehaviour
                 piecePrefab.GetComponent<Piece>().pieceType = PieceType.Pawn;
                 piecePrefab.GetComponent<Piece>().pieceColor = GameColor.Black;
 
-                chessTileList[i, 6].nowLocateColor = getColor;
+                chessTileList[i, 6].locatedPiece = piecePrefab.GetComponent<Piece>();
             }
             else if (getColor == GameColor.White)
             {
@@ -171,7 +171,7 @@ public class ChessManager : MonoBehaviour
                 piecePrefab.GetComponent<Piece>().pieceType = PieceType.Pawn;
                 piecePrefab.GetComponent<Piece>().pieceColor = GameColor.White;
 
-                chessTileList[i, 1].nowLocateColor = getColor;
+                chessTileList[i, 1].locatedPiece = piecePrefab.GetComponent<Piece>();
             }
             else
                 Debug.Log("Pawn 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -200,8 +200,8 @@ public class ChessManager : MonoBehaviour
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.Black;
 
 
-            chessTileList[1, 7].nowLocateColor = getColor;
-            chessTileList[6, 7].nowLocateColor = getColor;
+            chessTileList[1, 7].locatedPiece = piecePrefab1.GetComponent<Piece>();
+            chessTileList[6, 7].locatedPiece = piecePrefab2.GetComponent<Piece>();
         }
         else if (getColor == GameColor.White)
         {
@@ -219,8 +219,8 @@ public class ChessManager : MonoBehaviour
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.White;
 
 
-            chessTileList[1, 0].nowLocateColor = getColor;
-            chessTileList[6, 0].nowLocateColor = getColor;
+            chessTileList[1, 0].locatedPiece = piecePrefab1.GetComponent<Piece>();
+            chessTileList[6, 0].locatedPiece = piecePrefab2.GetComponent<Piece>();
         }
         else
             Debug.Log("Knight 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -249,8 +249,8 @@ public class ChessManager : MonoBehaviour
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.Black;
 
 
-            chessTileList[2, 7].nowLocateColor = getColor;
-            chessTileList[5, 7].nowLocateColor = getColor;
+            chessTileList[2, 7].locatedPiece = piecePrefab1.GetComponent<Piece>();
+            chessTileList[5, 7].locatedPiece = piecePrefab2.GetComponent<Piece>();
         }
         else if (getColor == GameColor.White)
         {
@@ -267,8 +267,8 @@ public class ChessManager : MonoBehaviour
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.White;
 
-            chessTileList[2, 0].nowLocateColor = getColor;
-            chessTileList[5, 0].nowLocateColor = getColor;
+            chessTileList[2, 0].locatedPiece = piecePrefab1.GetComponent<Piece>();
+            chessTileList[5, 0].locatedPiece = piecePrefab2.GetComponent<Piece>();
         }
         else
             Debug.Log("Bishop 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -300,8 +300,8 @@ public class ChessManager : MonoBehaviour
             nowKing.nowRooks[0] = piecePrefab1.GetComponent<Rook>();
             nowKing.nowRooks[1] = piecePrefab2.GetComponent<Rook>();
 
-            chessTileList[0, 7].nowLocateColor = getColor;
-            chessTileList[7, 7].nowLocateColor = getColor;
+            chessTileList[0, 7].locatedPiece = piecePrefab1.GetComponent<Piece>();
+            chessTileList[7, 7].locatedPiece = piecePrefab2.GetComponent<Piece>();
         }
         else if (getColor == GameColor.White)
         {
@@ -322,8 +322,8 @@ public class ChessManager : MonoBehaviour
             nowKing.nowRooks[0] = piecePrefab1.GetComponent<Rook>();
             nowKing.nowRooks[1] = piecePrefab2.GetComponent<Rook>();
 
-            chessTileList[0, 0].nowLocateColor = getColor;
-            chessTileList[7, 0].nowLocateColor = getColor;
+            chessTileList[0, 0].locatedPiece = piecePrefab1.GetComponent<Piece>();
+            chessTileList[7, 0].locatedPiece = piecePrefab2.GetComponent<Piece>();
         }
         else
             Debug.Log("Rook 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -343,7 +343,7 @@ public class ChessManager : MonoBehaviour
             piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Queen;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.Black;
 
-            chessTileList[3, 7].nowLocateColor = getColor;
+            chessTileList[3, 7].locatedPiece = piecePrefab1.GetComponent<Piece>();
         }
         else if (getColor == GameColor.White)
         {
@@ -353,7 +353,7 @@ public class ChessManager : MonoBehaviour
             piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Queen;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
 
-            chessTileList[3, 0].nowLocateColor = getColor;
+            chessTileList[3, 0].locatedPiece = piecePrefab1.GetComponent<Piece>();
         }
         else
             Debug.Log("Queen 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -374,7 +374,7 @@ public class ChessManager : MonoBehaviour
             piecePrefab1.GetComponent<Piece>().pieceType = PieceType.King;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.Black;
 
-            chessTileList[4, 7].nowLocateColor = getColor;
+            chessTileList[4, 7].locatedPiece = piecePrefab1.GetComponent<Piece>();
         }
         else if (getColor == GameColor.White)
         {
@@ -385,7 +385,7 @@ public class ChessManager : MonoBehaviour
             piecePrefab1.GetComponent<Piece>().pieceType = PieceType.King;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
 
-            chessTileList[4, 0].nowLocateColor = getColor;
+            chessTileList[4, 0].locatedPiece = piecePrefab1.GetComponent<Piece>();
         }
         else
             Debug.Log("King 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -394,22 +394,41 @@ public class ChessManager : MonoBehaviour
     #endregion
 
     #region 턴 관련 함수
-    public void StartTurn()
+    void GameStart()
     {
-        // 1. 
-        // 2. 
+        // 1. 플레이어 색 선정 후 카메라 이동
+        SetPlayerColor();
+
+        // 2. 기물의 이동 타일과 공격 기물 설정
+        SetPiecesInfo();
     }
 
     //턴 종료
     public void EndTurn()
     {
-        // 1. 공격 타일 설정
-        SetAttackTiles();
+        // 1. 이동 가능 타일 표시 기능 끄기
+        for (int i = 0; i < nowPiece.movableTIleList.Count; i++)
+        {
+            nowPiece.movableTIleList[i].SetAvailableCircle(false);
+        }
 
-        // 2. 이제 턴을 진행할 색 지정
+        // 2. 모든 기물 정보 재설정
+        nowPiece = null;
+        SetPiecesInfo();
+
+        // 3. 이제 턴을 진행할 색 지정
         nowTurnColor = (nowTurnColor == GameColor.White) ? GameColor.Black : GameColor.White;
     }
-    #endregion 턴 관련 함수
+
+    void Check()
+    {
+        
+    }
+
+    void Checkmate()
+    {
+
+    }
 
     //게임을 진행하기 전 플레이어의 색을 미리 지정합니다.
     void SetPlayerColor()
@@ -429,43 +448,26 @@ public class ChessManager : MonoBehaviour
         {
             whitePiecesParent.GetChild(i).transform.rotation = Quaternion.Euler(180, 0, 0);
             blackPiecesParent.GetChild(i).transform.rotation = Quaternion.Euler(180, 0, 0);
-
-            whitePiecesParent.GetChild(i).GetComponent<Piece>().SetAttackTile();
-            blackPiecesParent.GetChild(i).GetComponent<Piece>().SetAttackTile();
         }
     }
+    #endregion 턴 관련 함수
 
-    void MovePiece()
+    // 모든 기물의 이동 타일, 공격 기물 설정하는 함수
+    void SetPiecesInfo()
     {
-        //Piece가 선택되지 않았으면 아무 일도 일어나지 않음
-        if (nowPiece == null)
-            return;
-
-        if(Input.GetMouseButtonDown(0))
-        {
-            Vector2 rayPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            hit = Physics2D.Raycast(rayPos, Vector2.zero);
-
-            nowPiece.Move(hit.collider.GetComponent<Tile>());
-        }
-    }
-
-    
-
-    void SetAttackTiles()
-    {
-        Piece nowPiece = null;
-
-        for(int i =0; i< blackPiecesParent.childCount; i++)
-        {
-            nowPiece = blackPiecesParent.GetChild(i).GetComponent<Piece>();
-            nowPiece.SetAttackTile();
-        }
-
+        // 1. 각 기물의 이동 타일, 공격 기물 설정
         for (int i = 0; i < whitePiecesParent.childCount; i++)
         {
-            nowPiece = whitePiecesParent.GetChild(i).GetComponent<Piece>();
-            nowPiece.SetAttackTile();
+            whitePiecesParent.GetChild(i).GetComponent<Piece>().movableTIleList.Clear();
+            whitePiecesParent.GetChild(i).GetComponent<Piece>().attackPieceList.Clear();
+            whitePiecesParent.GetChild(i).GetComponent<Piece>().EvaluateMove();
+        }
+
+        for (int i = 0; i < blackPiecesParent.childCount; i++)
+        {
+            blackPiecesParent.GetChild(i).GetComponent<Piece>().movableTIleList.Clear();
+            blackPiecesParent.GetChild(i).GetComponent<Piece>().attackPieceList.Clear();
+            blackPiecesParent.GetChild(i).GetComponent<Piece>().EvaluateMove();
         }
     }
 }
