@@ -19,6 +19,9 @@ public class Tile : MonoBehaviour
 {
     [SerializeField]
     GameObject availableCircle;
+    public bool isWhiteAttack;
+    public bool isBlackAttack;
+
     public TIleName tileName;
 
     public Piece locatedPiece;                    //현재 위치한 Piece

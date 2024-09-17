@@ -137,5 +137,17 @@ public abstract class Piece : MonoBehaviour
                 ChessManager.instance.nowPiece.GetComponent<Rook>().isFirstMove = false;
         }
     }
+
+    public void SetIsColorAttack(Tile getTile)
+    {
+        if (pieceColor == GameColor.White)
+        {
+            getTile.isWhiteAttack = true;
+        }
+        else if(pieceColor == GameColor.Black)
+        {
+            getTile.isBlackAttack = true;
+        }
+    }
     #endregion
 }

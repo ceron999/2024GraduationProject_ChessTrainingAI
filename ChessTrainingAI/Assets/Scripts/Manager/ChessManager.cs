@@ -59,12 +59,16 @@ public class ChessManager : MonoBehaviour
     public GameColor nowTurnColor = GameColor.White;
     public Piece nowPiece;
 
+    #region 킹 오브젝트
+    Piece whiteKing;
+    Piece blackKing;
+    #endregion
+
     #region 턴 이벤트
     public UnityEvent gameStart;
     public UnityEvent turnEnd;
 
     public UnityEvent check;
-    public UnityEvent checkmate;
     public bool isCheck = false;
     public bool isCheckmate = false;
     #endregion 턴 이벤트
@@ -93,7 +97,6 @@ public class ChessManager : MonoBehaviour
         gameStart.AddListener(GameStart);
         turnEnd.AddListener(EndTurn);
         check.AddListener(Check);
-        checkmate.AddListener(Checkmate);
 
         // 게임 시작
         nowTurnColor = GameColor.White;
@@ -375,6 +378,7 @@ public class ChessManager : MonoBehaviour
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.Black;
 
             chessTileList[4, 7].locatedPiece = piecePrefab1.GetComponent<Piece>();
+            blackKing = piecePrefab1.GetComponent<Piece>();
         }
         else if (getColor == GameColor.White)
         {
@@ -386,6 +390,7 @@ public class ChessManager : MonoBehaviour
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
 
             chessTileList[4, 0].locatedPiece = piecePrefab1.GetComponent<Piece>();
+            whiteKing = piecePrefab1.GetComponent<Piece>();
         }
         else
             Debug.Log("King 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -400,6 +405,7 @@ public class ChessManager : MonoBehaviour
         SetPlayerColor();
 
         // 2. 기물의 이동 타일과 공격 기물 설정
+        SetTilesInfo();
         SetPiecesInfo();
     }
 
@@ -412,8 +418,9 @@ public class ChessManager : MonoBehaviour
             nowPiece.movableTIleList[i].SetAvailableCircle(false);
         }
 
-        // 2. 모든 기물 정보 재설정
+        // 2. 모든 기물과 타일 정보 재설정
         nowPiece = null;
+        SetTilesInfo();
         SetPiecesInfo();
 
         // 3. 이제 턴을 진행할 색 지정
@@ -422,12 +429,34 @@ public class ChessManager : MonoBehaviour
 
     void Check()
     {
-        
+        Debug.Log("Check");
+        isCheck = true;
+
+        // 1. 체크메이트인지 확인
+        if (IsCheckmate())
+            return;
+
+        // 체크 소리 진행
+
+        // 다음 수가 체크가 풀리는지 확인하도록 조건 하나를 추가함
     }
 
-    void Checkmate()
+    bool IsCheckmate()
     {
+        // 1. 킹이 움직일 수 있으면 체크메이트가 불가능하므로 패스
+        if (nowTurnColor == GameColor.White)
+        {
+            if (blackKing.movableTIleList.Count > 0)
+                return false;
+        }
+        else
+        {
+            if (whiteKing.movableTIleList.Count > 0)
+                return false;
+        }
 
+        // 2. 킹 앞을 가로막을 수 있는 기물이 존재하는가?
+        return true;
     }
 
     //게임을 진행하기 전 플레이어의 색을 미리 지정합니다.
@@ -452,6 +481,18 @@ public class ChessManager : MonoBehaviour
     }
     #endregion 턴 관련 함수
 
+    #region 타일 및 기물 정보 초기화 함수
+    //모든 타일이 공격받지 않는 타일이라고 설정하는 함수
+    void SetTilesInfo()
+    {
+        for (int col = 0; col < 8; col++)
+            for (int row = 0; row < 8; row++)
+            {
+                chessTileList[col, row].isBlackAttack = false;
+                chessTileList[col, row].isBlackAttack = true;
+            }
+    }
+
     // 모든 기물의 이동 타일, 공격 기물 설정하는 함수
     void SetPiecesInfo()
     {
@@ -470,4 +511,5 @@ public class ChessManager : MonoBehaviour
             blackPiecesParent.GetChild(i).GetComponent<Piece>().EvaluateMove();
         }
     }
+    #endregion
 }
