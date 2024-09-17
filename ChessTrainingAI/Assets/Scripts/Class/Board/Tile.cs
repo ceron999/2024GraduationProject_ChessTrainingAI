@@ -31,8 +31,13 @@ public class Tile : MonoBehaviour
 
     private void OnMouseDown()
     {
+        Debug.Log(tileName.ToString());
         // 이동할 기물이 없으면 패스
         if (ChessManager.instance.nowPiece == null)
+            return;
+
+        // 클릭한 타일의 기물 == 선택한 기물이면 클릭 한번에 piece와 tile 의 클릭 함수가 동작한 것이므로 제거
+        if (locatedPiece != null && ChessManager.instance.nowPiece.nowPos == locatedPiece.nowPos)
             return;
 
         if (Input.GetMouseButtonDown(0))

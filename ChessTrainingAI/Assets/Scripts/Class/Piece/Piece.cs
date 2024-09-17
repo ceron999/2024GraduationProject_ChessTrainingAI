@@ -21,6 +21,8 @@ public abstract class Piece : MonoBehaviour
     public List<Tile> movableTIleList = null;                      //현재 위치에서 이동 가능한 타일
     public List<Piece> attackPieceList = null;                      //현재 위치에서 이동 가능한 타일
 
+    bool isEvaluate = false;                            // 함수가 다 끝나기 전에 다른 기물을 건드리면 오류나서 생성한 함수
+
     public abstract void EvaluateMove();                //움직일 수 있는 타일 찾는 함수
 
     /// <summary>
@@ -53,16 +55,17 @@ public abstract class Piece : MonoBehaviour
 
         // 1. 현재 Piece 위치 변경
         this.transform.position = selectTIle.transform.position;
+        nowPos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
 
-        // 2. 해당 타일에 적 piece가 존재할 경우 해당 기물 파괴하고 정보 재설정
-        if(selectTIle.locatedPiece != null)
+        // 2. 해당 타일에 적 piece가 존재할 경우 해당 기물 파괴
+        if (selectTIle.locatedPiece != null)
         {
             Destroy(selectTIle.locatedPiece.gameObject);
-
-            nowTIle.locatedPiece = null;
         }
+
+        // 3. 타일 정보 재설정
+        nowTIle.locatedPiece = null;
         selectTIle.locatedPiece = this.GetComponent<Piece>();
-        nowPos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
 
         //모두 끝낸 후 턴 종료
         ChessManager.instance.turnEnd?.Invoke();
@@ -74,17 +77,28 @@ public abstract class Piece : MonoBehaviour
         if (ChessManager.instance.nowTurnColor != pieceColor)
             return;
 
-        // 1. 이전 기물과 현재 기물 정리
-        Piece pastPiece = ChessManager.instance.nowPiece;
-        ChessManager.instance.nowPiece = this;
-
-        // 2. 이전 기물의 원 제거 + 현재 기물의 원 표시
-        for (int i = 0; i < movableTIleList.Count; i++)
+        if (!isEvaluate)
         {
-            if(pastPiece != null)
-                pastPiece.movableTIleList[i].SetAvailableCircle(false);
-            movableTIleList[i].SetAvailableCircle(true);
-        }
+            isEvaluate = true;
+
+            // 1. 이전 기물과 현재 기물 정리
+            Piece pastPiece = ChessManager.instance.nowPiece;
+            ChessManager.instance.nowPiece = this;
+
+            // 2. 이전 기물의 원 제거 + 현재 기물의 원 표시
+            if (pastPiece != null && pastPiece.movableTIleList.Count > 0)
+                for (int i = 0; i < pastPiece.movableTIleList.Count; i++)
+                {
+                    pastPiece.movableTIleList[i].SetAvailableCircle(false);
+                }
+
+            for (int i = 0; i < movableTIleList.Count; i++)
+            {
+                movableTIleList[i].SetAvailableCircle(true);
+            }
+
+            isEvaluate = false;
+        }    
     }
 
     #region 타일 이동 가능 및 공격 기물 확인 함수

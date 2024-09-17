@@ -19,12 +19,13 @@ public class Bishop : Piece
         Vector2Int evaluateVector = nowPos;
         for (int i = 1; ; i++)
         {
+            Debug.Log("비숍 좌상 : " + evaluateVector);
             evaluateVector = new Vector2Int(nowPos.x - i, nowPos.y + i);
 
             // 1. 해당하는 타일이 존재하지 않으면 넘어감
             if (!IsAvailableTIle(evaluateVector))
                 break;
-
+            Debug.Log(evaluateVector + "통과");
             // 2. 타일의 기물이 없으면 이동 타일 추가
             if (ChessManager.instance.chessTileList[evaluateVector.x, evaluateVector.y].locatedPiece == null)
                 movableTIleList.Add(ChessManager.instance.chessTileList[evaluateVector.x, evaluateVector.y]);

@@ -22,7 +22,7 @@ public class Pawn : Piece
 
         // 1. 이동 타일 확인
         //전방 2칸 이동 가능?
-        if (isFirstMove)
+        if (isFirstMove && ChessManager.instance.chessTileList[forward1Pos.x, forward1Pos.y].locatedPiece == null)
         {
             nowTile = ChessManager.instance.chessTileList[forward2Pos.x, forward2Pos.y];
 
