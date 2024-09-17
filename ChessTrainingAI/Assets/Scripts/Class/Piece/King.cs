@@ -37,28 +37,29 @@ public class King : Piece
 
             Tile nowTile = ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y];
 
-            // 2. 해당 기물위치에 기물이 있으면 확인
+            // 2. 해당 위치가 공격당하는 위치일 경우 넘어감
+            if (pieceColor == GameColor.White)
+            {
+                Debug.Log("흰색 타일 들어옴 : " + nowTile.tileName.ToString());
+                Debug.Log(nowTile.isBlackAttack);
+                if (nowTile.isBlackAttack)
+                    continue;
+            }
+            else if (pieceColor == GameColor.Black)
+            {
+                if (nowTile.isWhiteAttack)
+                    continue;
+            }
+
+            // 3. 해당 기물위치에 기물이 있으면 확인
             if (nowTile.locatedPiece != null)
             {
-                // 2-1. 해당 타일 기물의 색 == 선택한 기물의 색이면 넘어감
+                // 3-1. 해당 타일 기물의 색 == 선택한 기물의 색이면 넘어감
                 if (nowTile.locatedPiece.pieceColor == pieceColor)
                     continue;
-
                 else
                 {
-                    // 2-2. 해당 위치가 공격당하는 위치일 경우 넘어감
-                    if (pieceColor == GameColor.White)
-                    {
-                        if(nowTile.isBlackAttack)
-                            continue;
-                    }
-                    else if(pieceColor == GameColor.Black)
-                    {
-                        if (nowTile.isWhiteAttack)
-                            continue;
-                    }
-
-                    // 2-3. 해당 위치로 이동했을 때 킹이 공격당하지 않는다면 공격 기물 추가 및 이동 타일 추가
+                    // 3-2. 해당 위치로 이동했을 때 킹이 공격당하지 않는다면 공격 기물 추가 및 이동 타일 추가
                     attackPieceList.Add(nowTile.locatedPiece);
                     movableTIleList.Add(nowTile);
                     SetIsColorAttack(nowTile);
@@ -141,5 +142,70 @@ public class King : Piece
         }
 
         return;
+    }
+
+    public bool Castling(Tile getTile)
+    {
+        Tile nowTIle = ChessManager.instance.chessTileList[nowPos.x, nowPos.y];
+
+        
+
+        if (getTile.tileName == TIleName.a3)
+        {
+            // 흰색 퀸사이드 캐슬링
+            // 1. 위치 이동
+            this.transform.position = getTile.transform.position;
+            nowRooks[0].transform.position = ChessManager.instance.chessTileList[3,0].transform.position;
+
+            // 2. 해당 타일 정보 수정
+            nowTIle.locatedPiece = null;
+            getTile.locatedPiece = this;
+            ChessManager.instance.chessTileList[3, 0].locatedPiece = nowRooks[0];
+
+            return true;
+        }
+        else if (getTile.tileName == TIleName.a7)
+        {
+            // 흰색 킹사이드 캐슬링
+            // 1. 위치 이동
+            this.transform.position = getTile.transform.position;
+            nowRooks[1].transform.position = ChessManager.instance.chessTileList[5, 0].transform.position;
+
+            // 2. 해당 타일 정보 수정
+            nowTIle.locatedPiece = null;
+            getTile.locatedPiece = this;
+            ChessManager.instance.chessTileList[5, 0].locatedPiece = nowRooks[1];
+
+            return true;
+        }
+        else if (getTile.tileName == TIleName.h3)
+        {
+            // 검은색 퀸사이드 캐슬링
+            // 1. 위치 이동
+            this.transform.position = getTile.transform.position;
+            nowRooks[0].transform.position = ChessManager.instance.chessTileList[3, 7].transform.position;
+
+            // 2. 해당 타일 정보 수정
+            nowTIle.locatedPiece = null;
+            getTile.locatedPiece = this;
+            ChessManager.instance.chessTileList[3, 7].locatedPiece = nowRooks[0];
+
+            return true;
+        }
+        else if (getTile.tileName == TIleName.h7)
+        {
+            // 검은색 킹사이드 캐슬링
+            // 1. 위치 이동
+            this.transform.position = getTile.transform.position;
+            nowRooks[1].transform.position = ChessManager.instance.chessTileList[5, 7].transform.position;
+
+            // 2. 해당 타일 정보 수정
+            nowTIle.locatedPiece = null;
+            getTile.locatedPiece = this;
+            ChessManager.instance.chessTileList[5, 7].locatedPiece = nowRooks[1];
+
+            return true;
+        }
+        else return false;
     }
 }

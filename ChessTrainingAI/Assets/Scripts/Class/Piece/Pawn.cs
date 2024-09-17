@@ -76,4 +76,9 @@ public class Pawn : Piece
             }
         }
     }
+
+    public bool Promotion(Tile getTile)
+    {
+        return false;
+    }
 }

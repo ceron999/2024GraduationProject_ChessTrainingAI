@@ -32,10 +32,10 @@ public abstract class Piece : MonoBehaviour
     /// <param name="isSkip"> Piece 이동 모션을 스킵할 것인가? </param>
     public void Move(Tile selectTIle, bool isSkip = true)
     {
-        // 0. 받아온 타일이 현재 이동 가능 타일 중 하나인가?
         if (movableTIleList.Count == 0)
             return;
 
+        // 0. 받아온 타일이 이동 가능 타일인가?
         for (int i = 0; i < movableTIleList.Count; i++)
         {
             // 이동 가능한 타일이면 반복문 깨고 나와
@@ -50,20 +50,26 @@ public abstract class Piece : MonoBehaviour
         // 기존 타일 정보 받아오기
         Tile nowTIle = ChessManager.instance.chessTileList[nowPos.x, nowPos.y];
 
-        // 폰이나 킹, 룩의 경우 특수 움직임 설정
+        // 1. 특수한 움직임 우선 판단
+        // 폰이나 킹, 룩의 경우 특수 움직임 조건 설정
         SetPieceSpecialInfo();
 
-        // 1. 현재 Piece 위치 변경
+        // 폰이나 킹, 룩의 경우 특수 움직임
+        if (IsSpecialMove(selectTIle))
+            return;
+
+        // 2. 일반적인 움직임 판단
+        // 2-1. 현재 Piece 위치 변경
         this.transform.position = selectTIle.transform.position;
         nowPos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
 
-        // 2. 해당 타일에 적 piece가 존재할 경우 해당 기물 파괴
+        // 2-2. 해당 타일에 적 piece가 존재할 경우 해당 기물 파괴
         if (selectTIle.locatedPiece != null)
         {
             Destroy(selectTIle.locatedPiece.gameObject);
         }
 
-        // 3. 타일 정보 재설정
+        // 2-3. 타일 정보 재설정
         nowTIle.locatedPiece = null;
         selectTIle.locatedPiece = this.GetComponent<Piece>();
 
@@ -118,7 +124,7 @@ public abstract class Piece : MonoBehaviour
     }
     #endregion
 
-    #region 특수 정보 확인
+    #region 특수 정보(캐슬링, 앙파상, 프로모션) 확인
 
     //폰 2칸 전진, 앙파상, 캐슬링, 프로모션 등을 컨트롤하기 위한 특수 함수
     void SetPieceSpecialInfo()
@@ -136,6 +142,49 @@ public abstract class Piece : MonoBehaviour
             if (ChessManager.instance.nowPiece.GetComponent<Rook>().isFirstMove)
                 ChessManager.instance.nowPiece.GetComponent<Rook>().isFirstMove = false;
         }
+
+        else if (ChessManager.instance.nowPiece.pieceType == PieceType.King)
+        {
+            if (ChessManager.instance.nowPiece.GetComponent<King>().isFirstMove)
+            {
+                ChessManager.instance.nowPiece.GetComponent<King>().isFirstMove = false;
+            }
+        }
+    }
+
+    bool IsSpecialMove(Tile getTile)
+    {
+        if (pieceType == PieceType.King)
+        {
+            // 0. 이미 1회 움직였으면 불가능
+            if (!GetComponent<King>().isFirstMove)
+                return false;
+
+            // 1. 캐슬링
+            if (GetComponent<King>().Castling(getTile))
+            {
+                ChessManager.instance.turnEnd?.Invoke();
+                return true;
+            }
+            else return false;
+
+        }
+        else if (pieceType == PieceType.Pawn)
+        {
+            // 0. 이미 1회 움직였으면 불가능
+            if (!GetComponent<Pawn>().isFirstMove)
+                return false;
+
+            // 2. 폰 프로모션 or 앙파상
+            if (GetComponent<Pawn>().Promotion(getTile))
+            {
+                ChessManager.instance.turnEnd?.Invoke();
+                return true;
+            }
+            else return false;
+        }
+        else
+            return false;
     }
 
     public void SetIsColorAttack(Tile getTile)

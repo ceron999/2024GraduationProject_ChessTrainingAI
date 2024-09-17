@@ -51,7 +51,7 @@ public class Rook : Piece
 
     void EvaluateDownMoveTiles()
     {
-        for (int i = 1; nowPos.y + i <= 7; i++)
+        for (int i = 1; nowPos.y - i >= 0; i++)
         {
             Vector2Int targetVector = new Vector2Int(nowPos.x, nowPos.y - i);
 

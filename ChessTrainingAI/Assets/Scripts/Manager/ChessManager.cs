@@ -134,16 +134,16 @@ public class ChessManager : MonoBehaviour
 
     void SetChessPiece()
     {
-        SetPawn(GameColor.White);
-        SetKnight(GameColor.White);
-        SetBishop(GameColor.White);
+        //SetPawn(GameColor.White);
+        //SetKnight(GameColor.White);
+        //SetBishop(GameColor.White);
         SetQueen(GameColor.White);
         SetKing(GameColor.White);
         SetRook(GameColor.White);
 
-        SetPawn(GameColor.Black);
-        SetKnight(GameColor.Black);
-        SetBishop(GameColor.Black);
+        //SetPawn(GameColor.Black);
+        //SetKnight(GameColor.Black);
+        //SetBishop(GameColor.Black);
         SetQueen(GameColor.Black);
         SetKing(GameColor.Black);
         SetRook(GameColor.Black);
@@ -473,9 +473,12 @@ public class ChessManager : MonoBehaviour
 
         // 카메라 설정
         mainCamera.transform.rotation = Quaternion.Euler(0, 0, 180);
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < whitePiecesParent.childCount; i++)
         {
             whitePiecesParent.GetChild(i).transform.rotation = Quaternion.Euler(180, 0, 0);
+        }
+        for (int i = 0; i < blackPiecesParent.childCount; i++)
+        {
             blackPiecesParent.GetChild(i).transform.rotation = Quaternion.Euler(180, 0, 0);
         }
     }
@@ -489,7 +492,7 @@ public class ChessManager : MonoBehaviour
             for (int row = 0; row < 8; row++)
             {
                 chessTileList[col, row].isBlackAttack = false;
-                chessTileList[col, row].isBlackAttack = true;
+                chessTileList[col, row].isWhiteAttack = false;
             }
     }
 
@@ -510,6 +513,14 @@ public class ChessManager : MonoBehaviour
             blackPiecesParent.GetChild(i).GetComponent<Piece>().attackPieceList.Clear();
             blackPiecesParent.GetChild(i).GetComponent<Piece>().EvaluateMove();
         }
+
+        // 킹은 기물 정리가 다 끝난 뒤 해야함
+        whiteKing.movableTIleList.Clear();
+        whiteKing.attackPieceList.Clear();
+        whiteKing.EvaluateMove();
+        blackKing.movableTIleList.Clear();
+        blackKing.attackPieceList.Clear();
+        blackKing.EvaluateMove();
     }
     #endregion
 }
