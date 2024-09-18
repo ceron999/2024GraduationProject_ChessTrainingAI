@@ -45,7 +45,7 @@ public class King : Piece
             {
                 if (nowTile.isWhiteAttack)
                     continue;
-                else if (nowTile.isWhiteBolckAttack)
+                else if (nowTile.isWhiteBlockAttack)
                     continue;
             }
 

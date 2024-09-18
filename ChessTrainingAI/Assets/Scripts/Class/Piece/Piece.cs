@@ -8,6 +8,11 @@ public enum PieceType
     Pawn, Knight, Bishop, Rook, Queen, King, //1~ 6
 }
 
+public struct TestMoveInfo
+{
+    
+}
+
 public abstract class Piece : MonoBehaviour
 {
     #region 기물 정보
@@ -22,6 +27,13 @@ public abstract class Piece : MonoBehaviour
     public List<Piece> attackPieceList = null;                      //현재 위치에서 이동 가능한 타일
 
     bool isEvaluate = false;                            // 함수가 다 끝나기 전에 다른 기물을 건드리면 오류나서 생성한 함수
+
+    #region 테스트용 정보
+    GameObject targetPiece;
+
+    Vector2Int startPos;
+    Vector2Int endPos;
+    #endregion
 
     public abstract void EvaluateMove();                //움직일 수 있는 타일 찾는 함수
 
@@ -135,15 +147,6 @@ public abstract class Piece : MonoBehaviour
         }
         return false;
     }
-
-    /// <summary>
-    ///  현재 체크상태일 때 발생한다.
-    ///  만일 다음 수를 두어도 체크가 해제되지 않으면 다음 수를 둘 수 없으므로 해당 타일을 이동 가능 타일에서 제거한다. 
-    /// </summary>
-    public bool IsCheckContinue()
-    {
-        return false;
-    }
     #endregion
 
     #region 특수 정보(캐슬링, 앙파상, 프로모션) 확인
@@ -225,7 +228,7 @@ public abstract class Piece : MonoBehaviour
     {
         if (pieceColor == GameColor.White)
         {
-            getTile.isWhiteBolckAttack = true;
+            getTile.isWhiteBlockAttack = true;
         }
         else if (pieceColor == GameColor.Black)
         {

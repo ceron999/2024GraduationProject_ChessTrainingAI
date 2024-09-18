@@ -136,16 +136,16 @@ public class ChessManager : MonoBehaviour
 
     void SetChessPiece()
     {
-        //SetPawn(GameColor.White);
-        //SetKnight(GameColor.White);
-        //SetBishop(GameColor.White);
+        SetPawn(GameColor.White);
+        SetKnight(GameColor.White);
+        SetBishop(GameColor.White);
         SetQueen(GameColor.White);
         SetKing(GameColor.White);
         SetRook(GameColor.White);
 
-        //SetPawn(GameColor.Black);
-        //SetKnight(GameColor.Black);
-        //SetBishop(GameColor.Black);
+        SetPawn(GameColor.Black);
+        SetKnight(GameColor.Black);
+        SetBishop(GameColor.Black);
         SetQueen(GameColor.Black);
         SetKing(GameColor.Black);
         SetRook(GameColor.Black);
@@ -435,14 +435,13 @@ public class ChessManager : MonoBehaviour
     }
 
     // 턴을 종료하기 전 체크인지 확인하는 함수
-    bool EvaluateIsCheck()
+    public bool EvaluateIsCheck()
     {
         if (nowTurnColor == GameColor.White)
         {
             // 1. 각 기물의 이동 타일, 공격 기물 설정
             for (int i = 0; i < whitePiecesParent.childCount; i++)
             {
-                Debug.Log(whitePiecesParent.GetChild(i).GetComponent<Piece>().pieceType.ToString());
                 if (whitePiecesParent.GetChild(i).GetComponent<Piece>().IsAttackKing())
                     return true;
             }
@@ -562,6 +561,32 @@ public class ChessManager : MonoBehaviour
         blackKing.movableTIleList.Clear();
         blackKing.attackPieceList.Clear();
         blackKing.EvaluateMove();
+    }
+    #endregion
+
+    #region 이동 테스트 및 복구 함수
+    void TestMove(Tile startTile, Tile targetTile)
+    {
+        GameObject startTilePiece = startTile.locatedPiece.gameObject;
+        if (targetTile.locatedPiece != null)
+        {
+            GameObject targetTilePiece = targetTile.locatedPiece.gameObject;
+        }
+
+        // 복제
+
+        // 기존 기물 끄기
+
+        // 새로운 기물로 이동
+
+        // 검사
+
+        // 체크인지 확인
+    }
+
+    void RollBackTestMove()
+    {
+        // 원래 기물 돌려놓기
     }
     #endregion
 }

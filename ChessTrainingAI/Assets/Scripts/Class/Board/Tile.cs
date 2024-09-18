@@ -20,7 +20,7 @@ public class Tile : MonoBehaviour
     [SerializeField]
     GameObject availableCircle;
     public bool isWhiteAttack;
-    public bool isWhiteBolckAttack;       // 비숍이나 룩, 퀸이 가로막힌 공격 경로일 경우
+    public bool isWhiteBlockAttack;       // 비숍이나 룩, 퀸이 가로막힌 공격 경로일 경우
     public bool isBlackAttack;
     public bool isBlackBlockAttack;
 
@@ -39,7 +39,7 @@ public class Tile : MonoBehaviour
     public void ClearTileInfo()
     {
         isWhiteAttack = false;
-        isWhiteBolckAttack = false;
+        isWhiteBlockAttack = false;
         isBlackAttack = false;
         isBlackBlockAttack = false;
     }
