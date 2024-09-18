@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,7 +12,21 @@ public enum GameColor
 
 public class ChessManager : MonoBehaviour
 {
+    #region Singleton
     public static ChessManager instance;
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    #endregion
 
     public Camera mainCamera;          //흑백에 따라 보는 관점 바꾸려고 가져온 카메라
 
@@ -72,19 +87,6 @@ public class ChessManager : MonoBehaviour
     public bool isCheck = false;
     public bool isCheckmate = false;
     #endregion 턴 이벤트
-
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     void Start()
     {
@@ -423,8 +425,38 @@ public class ChessManager : MonoBehaviour
         SetTilesInfo();
         SetPiecesInfo();
 
+        if (EvaluateIsCheck())
+            check?.Invoke();
+
+        SetKingInfo();
+
         // 3. 이제 턴을 진행할 색 지정
         nowTurnColor = (nowTurnColor == GameColor.White) ? GameColor.Black : GameColor.White;
+    }
+
+    // 턴을 종료하기 전 체크인지 확인하는 함수
+    bool EvaluateIsCheck()
+    {
+        if (nowTurnColor == GameColor.White)
+        {
+            // 1. 각 기물의 이동 타일, 공격 기물 설정
+            for (int i = 0; i < whitePiecesParent.childCount; i++)
+            {
+                Debug.Log(whitePiecesParent.GetChild(i).GetComponent<Piece>().pieceType.ToString());
+                if (whitePiecesParent.GetChild(i).GetComponent<Piece>().IsAttackKing())
+                    return true;
+            }
+        }
+        else if (nowTurnColor == GameColor.Black)
+        {
+            for (int i = 0; i < blackPiecesParent.childCount; i++)
+            {
+                if (whitePiecesParent.GetChild(i).GetComponent<Piece>().IsAttackKing())
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     void Check()
@@ -456,7 +488,7 @@ public class ChessManager : MonoBehaviour
         }
 
         // 2. 킹 앞을 가로막을 수 있는 기물이 존재하는가?
-        return true;
+        return false;
     }
 
     //게임을 진행하기 전 플레이어의 색을 미리 지정합니다.
@@ -491,8 +523,7 @@ public class ChessManager : MonoBehaviour
         for (int col = 0; col < 8; col++)
             for (int row = 0; row < 8; row++)
             {
-                chessTileList[col, row].isBlackAttack = false;
-                chessTileList[col, row].isWhiteAttack = false;
+                chessTileList[col, row].ClearTileInfo();
             }
     }
 
@@ -502,18 +533,28 @@ public class ChessManager : MonoBehaviour
         // 1. 각 기물의 이동 타일, 공격 기물 설정
         for (int i = 0; i < whitePiecesParent.childCount; i++)
         {
+            // 킹은 마지막에 다 설정하고 해야하므로 패스
+            if (whitePiecesParent.GetChild(i).GetComponent<Piece>().pieceType == PieceType.King)
+                continue;
+
             whitePiecesParent.GetChild(i).GetComponent<Piece>().movableTIleList.Clear();
             whitePiecesParent.GetChild(i).GetComponent<Piece>().attackPieceList.Clear();
-            whitePiecesParent.GetChild(i).GetComponent<Piece>().EvaluateMove();
-        }
+            whitePiecesParent.GetChild(i).GetComponent<Piece>().EvaluateMove();        }
 
         for (int i = 0; i < blackPiecesParent.childCount; i++)
         {
+            // 킹은 마지막에 다 설정하고 해야하므로 패스
+            if (blackPiecesParent.GetChild(i).GetComponent<Piece>().pieceType == PieceType.King)
+                continue;
+
             blackPiecesParent.GetChild(i).GetComponent<Piece>().movableTIleList.Clear();
             blackPiecesParent.GetChild(i).GetComponent<Piece>().attackPieceList.Clear();
             blackPiecesParent.GetChild(i).GetComponent<Piece>().EvaluateMove();
         }
+    }
 
+    void SetKingInfo()
+    {
         // 킹은 기물 정리가 다 끝난 뒤 해야함
         whiteKing.movableTIleList.Clear();
         whiteKing.attackPieceList.Clear();

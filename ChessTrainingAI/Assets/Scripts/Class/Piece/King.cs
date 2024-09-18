@@ -8,15 +8,11 @@ public class King : Piece
     public bool isFirstMove = true;
     public Rook[] nowRooks = new Rook[2];
 
-    public bool isCheck = false;
-    public bool isCheckMate = false;
-
     public override void EvaluateMove()
     {
         if (isFirstMove)
         {
-            EvaluateKingSideCastling();
-            EvaluateQueenSideCastling();
+            EvaluateCastling();
         }
 
         List<Vector2Int> targetVector = new List<Vector2Int>();
@@ -36,18 +32,20 @@ public class King : Piece
                 continue;
 
             Tile nowTile = ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y];
-
+            
             // 2. 해당 위치가 공격당하는 위치일 경우 넘어감
             if (pieceColor == GameColor.White)
             {
-                Debug.Log("흰색 타일 들어옴 : " + nowTile.tileName.ToString());
-                Debug.Log(nowTile.isBlackAttack);
                 if (nowTile.isBlackAttack)
+                    continue;
+                else if (nowTile.isBlackBlockAttack)
                     continue;
             }
             else if (pieceColor == GameColor.Black)
             {
                 if (nowTile.isWhiteAttack)
+                    continue;
+                else if (nowTile.isWhiteBolckAttack)
                     continue;
             }
 
@@ -68,21 +66,17 @@ public class King : Piece
             else
             {
                 // 3. 해당 타일에 기물이 존재하지 않았을 경우
-                // 3-1. 해당 위치로 이동했을 때 킹이 공격당하면 넘어감
-                if (ChessManager.instance.isCheck)
-                    continue;
-                
-                // 2-3. 해당 위치로 이동했을 때 킹이 공격당하지 않는다면 이동 타일 추가
-                else
-                {
-                    movableTIleList.Add(nowTile);
-                    SetIsColorAttack(nowTile);
-                }
+                movableTIleList.Add(nowTile);
+                SetIsColorAttack(nowTile);
             }
         }
     }
     void EvaluateCastling()
     {
+        // 체크 당하면 캐슬링 불가
+        if (ChessManager.instance.isCheck)
+            return;
+
         EvaluateKingSideCastling();
         EvaluateQueenSideCastling();
     }
@@ -147,8 +141,6 @@ public class King : Piece
     public bool Castling(Tile getTile)
     {
         Tile nowTIle = ChessManager.instance.chessTileList[nowPos.x, nowPos.y];
-
-        
 
         if (getTile.tileName == TIleName.a3)
         {

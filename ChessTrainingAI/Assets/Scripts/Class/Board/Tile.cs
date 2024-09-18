@@ -20,7 +20,9 @@ public class Tile : MonoBehaviour
     [SerializeField]
     GameObject availableCircle;
     public bool isWhiteAttack;
+    public bool isWhiteBolckAttack;       // 비숍이나 룩, 퀸이 가로막힌 공격 경로일 경우
     public bool isBlackAttack;
+    public bool isBlackBlockAttack;
 
     public TIleName tileName;
 
@@ -32,9 +34,18 @@ public class Tile : MonoBehaviour
         availableCircle.SetActive(isActive);
     }
 
+
+    // 매 턴마다 정보 초기화할때 쓸 함수
+    public void ClearTileInfo()
+    {
+        isWhiteAttack = false;
+        isWhiteBolckAttack = false;
+        isBlackAttack = false;
+        isBlackBlockAttack = false;
+    }
+
     private void OnMouseDown()
     {
-        Debug.Log(tileName.ToString());
         // 이동할 기물이 없으면 패스
         if (ChessManager.instance.nowPiece == null)
             return;

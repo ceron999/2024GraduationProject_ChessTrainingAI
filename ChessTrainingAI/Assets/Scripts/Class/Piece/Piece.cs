@@ -122,6 +122,28 @@ public abstract class Piece : MonoBehaviour
         }
         return true;
     }
+
+    public bool IsAttackKing()
+    {
+        if (attackPieceList.Count == 0)
+            return false;
+
+        for(int i =0; i<attackPieceList.Count; i++)
+        {
+            if (attackPieceList[i].pieceType == PieceType.King)
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    ///  현재 체크상태일 때 발생한다.
+    ///  만일 다음 수를 두어도 체크가 해제되지 않으면 다음 수를 둘 수 없으므로 해당 타일을 이동 가능 타일에서 제거한다. 
+    /// </summary>
+    public bool IsCheckContinue()
+    {
+        return false;
+    }
     #endregion
 
     #region 특수 정보(캐슬링, 앙파상, 프로모션) 확인
@@ -196,6 +218,18 @@ public abstract class Piece : MonoBehaviour
         else if(pieceColor == GameColor.Black)
         {
             getTile.isBlackAttack = true;
+        }
+    }
+
+    public void SetIsColorBlockAttack(Tile getTile)
+    {
+        if (pieceColor == GameColor.White)
+        {
+            getTile.isWhiteBolckAttack = true;
+        }
+        else if (pieceColor == GameColor.Black)
+        {
+            getTile.isBlackBlockAttack = true;
         }
     }
     #endregion

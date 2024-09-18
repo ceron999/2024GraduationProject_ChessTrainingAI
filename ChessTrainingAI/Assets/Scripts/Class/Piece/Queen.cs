@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Queen : Piece
 {
+    bool isBlock = false;
+    bool isEvaluateSkip = false;            // 평가할 때 (공격 방향에 적 기물이 있음 + 적 기물이 킹이 아님)이면 평가를 스킵해버림
+                                            // 이유 : 적 기물 뒤까지 평가해서 공격 타일로 지정해 조건이 하나 더 필요했음
+
     public override void EvaluateMove()
     {
         EvaluateLeftMoveTiles();
@@ -23,9 +27,25 @@ public class Queen : Piece
         {
             Vector2Int targetVector = new Vector2Int(nowPos.x - i, nowPos.y);
 
-            if (!EvaluateCrossTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateCrossTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
     void EvaluateRightMoveTiles()
@@ -34,9 +54,25 @@ public class Queen : Piece
         {
             Vector2Int targetVector = new Vector2Int(nowPos.x + i, nowPos.y);
 
-            if (!EvaluateCrossTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateCrossTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
     void EvaluateUpMoveTiles()
@@ -45,9 +81,25 @@ public class Queen : Piece
         {
             Vector2Int targetVector = new Vector2Int(nowPos.x, nowPos.y + i);
 
-            if (!EvaluateCrossTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateCrossTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
     void EvaluateDownMoveTiles()
@@ -56,9 +108,25 @@ public class Queen : Piece
         {
             Vector2Int targetVector = new Vector2Int(nowPos.x, nowPos.y - i);
 
-            if (!EvaluateCrossTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateCrossTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
     #endregion
 
@@ -67,61 +135,125 @@ public class Queen : Piece
     void EvaluateLeftUpMoveTiles()
     {
         Vector2Int targetVector = nowPos;
+
         for (int i = 1; ; i++)
         {
             targetVector = new Vector2Int(nowPos.x - i, nowPos.y + i);
 
-            if (!EvaluateDiagonalTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateDiagonalTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
     //(+1.+1)
     void EvaluateRightUpMoveTiles()
     {
         Vector2Int targetVector = nowPos;
+
         for (int i = 1; ; i++)
         {
             targetVector = new Vector2Int(nowPos.x + i, nowPos.y + i);
 
-            if (!EvaluateDiagonalTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateDiagonalTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
     //(-1.-1)
     void EvaluateLeftDownMoveTiles()
     {
         Vector2Int targetVector = nowPos;
+
         for (int i = 1; ; i++)
         {
             targetVector = new Vector2Int(nowPos.x - i, nowPos.y - i);
 
-            if (!EvaluateDiagonalTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateDiagonalTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
     //(+1.-1)
     void EvaluateRightDownMoveTiles()
     {
         Vector2Int targetVector = nowPos;
+
         for (int i = 1; ; i++)
         {
             targetVector = new Vector2Int(nowPos.x + i, nowPos.y - i);
 
-            if (!EvaluateDiagonalTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateDiagonalTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
     #endregion
 
-    bool EvaluateCrossTiles(Vector2Int getVector)
+    void EvaluateCrossTiles(Vector2Int getVector)
     {
-        // 0. 해당 타일이 존재하지 않으면 중단
-        if (!IsAvailableTIle(getVector))
-            return false;
-
         Tile nowTIle = ChessManager.instance.chessTileList[getVector.x, getVector.y];
 
         // 1. 해당 타일이 비어있으면 이동 타일로 추가
@@ -134,7 +266,10 @@ public class Queen : Piece
         {
             // 2. 해당 타일의 기물의 색 == 선택한 기물의 색이면 넘어감
             if (nowTIle.locatedPiece.pieceColor == pieceColor)
-                return false;
+            {
+                isEvaluateSkip = true;
+                return;
+            }
 
             // 3. 해당 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
             else
@@ -142,18 +277,22 @@ public class Queen : Piece
                 attackPieceList.Add(nowTIle.locatedPiece);
                 movableTIleList.Add(nowTIle);
                 SetIsColorAttack(nowTIle);
-                return false;
+
+                if (nowTIle.locatedPiece.pieceType == PieceType.King)
+                {
+                    isBlock = true;
+                    SetIsColorBlockAttack(nowTIle);
+                }
+                else
+                    isEvaluateSkip = true;
+
+                return;
             }
         }
-        return true;
     }
 
-    bool EvaluateDiagonalTiles(Vector2Int getVector)
+    void EvaluateDiagonalTiles(Vector2Int getVector)
     {
-        // 1. 해당하는 타일이 존재하지 않으면 넘어감
-        if (!IsAvailableTIle(getVector))
-            return false;
-
         Tile nowTIle = ChessManager.instance.chessTileList[getVector.x, getVector.y];
 
         // 2. 타일의 기물이 없으면 이동 타일 추가
@@ -166,7 +305,10 @@ public class Queen : Piece
         {
             // 3. 타일의 기물 색 == 선택한 기물의 색이면 넘어감
             if (nowTIle.locatedPiece.pieceColor == pieceColor)
-                return false;
+            {
+                isEvaluateSkip = true;
+                return;
+            }
 
             // 4. 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
             else
@@ -174,10 +316,17 @@ public class Queen : Piece
                 attackPieceList.Add(nowTIle.locatedPiece);
                 movableTIleList.Add(nowTIle);
                 SetIsColorAttack(nowTIle);
-                return false;
+
+                if (nowTIle.locatedPiece.pieceType == PieceType.King)
+                {
+                    isBlock = true;
+                    SetIsColorBlockAttack(nowTIle);
+                }
+                else
+                    isEvaluateSkip = true;
+
+                return;
             }
         }
-
-        return true;
     }
 }

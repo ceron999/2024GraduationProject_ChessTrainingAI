@@ -5,6 +5,9 @@ using UnityEngine;
 public class Rook : Piece
 {
     public bool isFirstMove = true;
+    bool isBlock = false;
+    bool isEvaluateSkip = false;            // 평가할 때 (공격 방향에 적 기물이 있음 + 적 기물이 킹이 아님)이면 평가를 스킵해버림
+                                            // 이유 : 적 기물 뒤까지 평가해서 공격 타일로 지정해 조건이 하나 더 필요했음
 
     public override void EvaluateMove()
     {
@@ -22,9 +25,25 @@ public class Rook : Piece
         {
             Vector2Int targetVector = new Vector2Int(nowPos.x - i, nowPos.y);
 
-            if (!EvaluateTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
     void EvaluateRightMoveTiles()
@@ -33,9 +52,25 @@ public class Rook : Piece
         {
             Vector2Int targetVector = new Vector2Int(nowPos.x + i, nowPos.y);
 
-            if (!EvaluateTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
     void EvaluateUpMoveTiles()
@@ -44,9 +79,25 @@ public class Rook : Piece
         {
             Vector2Int targetVector = new Vector2Int(nowPos.x, nowPos.y + i);
 
-            if (!EvaluateTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
     void EvaluateDownMoveTiles()
@@ -55,17 +106,29 @@ public class Rook : Piece
         {
             Vector2Int targetVector = new Vector2Int(nowPos.x, nowPos.y - i);
 
-            if (!EvaluateTiles(targetVector))
+            // 1. 해당하는 타일이 존재하지 않으면 넘어감
+            if (!IsAvailableTIle(targetVector))
                 break;
+
+            // 2. 평가를 중단하고 싶으므로 중단
+            if (isEvaluateSkip)
+                break;
+
+            if (isBlock)
+            {
+                SetIsColorBlockAttack(ChessManager.instance.chessTileList[targetVector.x, targetVector.y]);
+                continue;
+            }
+
+            EvaluateTiles(targetVector);
         }
+
+        isBlock = false;
+        isEvaluateSkip = false;
     }
 
-    bool EvaluateTiles(Vector2Int getVector)
+    void EvaluateTiles(Vector2Int getVector)
     {
-        // 0. 해당 타일이 존재하지 않으면 중단
-        if (!IsAvailableTIle(getVector))
-            return false;
-
         Tile nowTIle = ChessManager.instance.chessTileList[getVector.x, getVector.y];
 
         // 1. 해당 타일이 비어있으면 이동 타일로 추가
@@ -78,7 +141,10 @@ public class Rook : Piece
         {
             // 2. 해당 타일의 기물의 색 == 선택한 기물의 색이면 넘어감
             if (nowTIle.locatedPiece.pieceColor == pieceColor)
-                return false;
+            {
+                isEvaluateSkip = true;
+                return;
+            }
 
             // 3. 해당 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
             else
@@ -86,11 +152,18 @@ public class Rook : Piece
                 attackPieceList.Add(nowTIle.locatedPiece);
                 movableTIleList.Add(nowTIle);
                 SetIsColorAttack(nowTIle);
-                return false;
+
+                if (nowTIle.locatedPiece.pieceType == PieceType.King)
+                {
+                    isBlock = true;
+                    SetIsColorBlockAttack(nowTIle);
+                }
+                else 
+                    isEvaluateSkip = true;
+
+                return;
             }
         }
-
-        return true;
     }
     #endregion
 }
