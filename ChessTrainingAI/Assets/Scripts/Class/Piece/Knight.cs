@@ -45,4 +45,9 @@ public class Knight : Piece
                 continue;
         }
     }
+
+    public override void TestMove()
+    {
+
+    }
 }

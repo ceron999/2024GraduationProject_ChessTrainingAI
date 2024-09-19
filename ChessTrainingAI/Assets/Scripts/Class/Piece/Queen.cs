@@ -329,4 +329,9 @@ public class Queen : Piece
             }
         }
     }
+
+    public override void TestMove()
+    {
+
+    }
 }

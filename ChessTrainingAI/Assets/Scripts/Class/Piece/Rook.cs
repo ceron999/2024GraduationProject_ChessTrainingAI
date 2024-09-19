@@ -166,4 +166,9 @@ public class Rook : Piece
         }
     }
     #endregion
+
+    public override void TestMove()
+    {
+
+    }
 }

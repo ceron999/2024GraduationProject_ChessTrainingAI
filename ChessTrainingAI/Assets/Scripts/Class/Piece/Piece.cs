@@ -8,11 +8,6 @@ public enum PieceType
     Pawn, Knight, Bishop, Rook, Queen, King, //1~ 6
 }
 
-public struct TestMoveInfo
-{
-    
-}
-
 public abstract class Piece : MonoBehaviour
 {
     #region 기물 정보
@@ -28,14 +23,16 @@ public abstract class Piece : MonoBehaviour
 
     bool isEvaluate = false;                            // 함수가 다 끝나기 전에 다른 기물을 건드리면 오류나서 생성한 함수
 
-    #region 테스트용 정보
-    GameObject targetPiece;
+    public void PieceInfoCopy(Piece getInfo)
+    {
+        pieceType = getInfo.pieceType;
+        pieceColor = getInfo.pieceColor;
+        nowPos = getInfo.nowPos;
+    }
 
-    Vector2Int startPos;
-    Vector2Int endPos;
-    #endregion
 
     public abstract void EvaluateMove();                //움직일 수 있는 타일 찾는 함수
+    public abstract void TestMove();
 
     /// <summary>
     /// 기물 이동하는 함수
@@ -104,19 +101,23 @@ public abstract class Piece : MonoBehaviour
             ChessManager.instance.nowPiece = this;
 
             // 2. 이전 기물의 원 제거 + 현재 기물의 원 표시
-            if (pastPiece != null && pastPiece.movableTIleList.Count > 0)
-                for (int i = 0; i < pastPiece.movableTIleList.Count; i++)
-                {
-                    pastPiece.movableTIleList[i].SetAvailableCircle(false);
-                }
-
-            for (int i = 0; i < movableTIleList.Count; i++)
-            {
-                movableTIleList[i].SetAvailableCircle(true);
-            }
+            if (pastPiece != null)
+                pastPiece.SetAvailableCircle(false);
+            
+            SetAvailableCircle(true);
 
             isEvaluate = false;
         }    
+    }
+
+    // 이동 가능한 타일임을 보이는 원을 보이게할지 안보이게할지 설정하는 함수
+    public void SetAvailableCircle(bool isActive)
+    {
+        if(movableTIleList.Count >0)
+            for(int i =0; i< movableTIleList.Count; i++)
+            {
+                movableTIleList [i].SetAvailableCircle(true);
+            }
     }
 
     #region 타일 이동 가능 및 공격 기물 확인 함수

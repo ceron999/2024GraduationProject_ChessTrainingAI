@@ -1,9 +1,11 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Events;
+using Unity.VisualScripting;
 
 public enum GameColor
 { 
@@ -36,7 +38,9 @@ public class ChessManager : MonoBehaviour
     [SerializeField]
     Transform chessBoardParent;
     [SerializeField]
-    public Tile[,] chessTileList = new Tile[8,8];
+    Transform testBoardParent;
+    [SerializeField]
+    public Tile[,] chessTileList = new Tile[8, 8];
     #endregion 타일, 보드판 정보
 
     #region 기물 프리팹
@@ -44,6 +48,8 @@ public class ChessManager : MonoBehaviour
     Transform whitePiecesParent;
     [SerializeField]
     Transform blackPiecesParent;
+    [SerializeField]
+    Transform testPiecesParent;
     [SerializeField]
     GameObject whitePawnPrefab;
     [SerializeField]
@@ -73,7 +79,6 @@ public class ChessManager : MonoBehaviour
     public GameColor playerColor = GameColor.Null;
     public GameColor nowTurnColor = GameColor.White;
     public Piece nowPiece;
-
     #region 킹 오브젝트
     Piece whiteKing;
     Piece blackKing;
@@ -133,6 +138,7 @@ public class ChessManager : MonoBehaviour
                     colorChange = !colorChange;
             }
     }
+
 
     void SetChessPiece()
     {
@@ -487,6 +493,8 @@ public class ChessManager : MonoBehaviour
         }
 
         // 2. 킹 앞을 가로막을 수 있는 기물이 존재하는가?
+        TestManager.Instance.readyTest?.Invoke();
+
         return false;
     }
 
@@ -526,6 +534,8 @@ public class ChessManager : MonoBehaviour
             }
     }
 
+   
+
     // 모든 기물의 이동 타일, 공격 기물 설정하는 함수
     void SetPiecesInfo()
     {
@@ -564,29 +574,5 @@ public class ChessManager : MonoBehaviour
     }
     #endregion
 
-    #region 이동 테스트 및 복구 함수
-    void TestMove(Tile startTile, Tile targetTile)
-    {
-        GameObject startTilePiece = startTile.locatedPiece.gameObject;
-        if (targetTile.locatedPiece != null)
-        {
-            GameObject targetTilePiece = targetTile.locatedPiece.gameObject;
-        }
-
-        // 복제
-
-        // 기존 기물 끄기
-
-        // 새로운 기물로 이동
-
-        // 검사
-
-        // 체크인지 확인
-    }
-
-    void RollBackTestMove()
-    {
-        // 원래 기물 돌려놓기
-    }
-    #endregion
+    
 }
