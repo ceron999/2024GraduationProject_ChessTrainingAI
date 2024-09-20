@@ -1,4 +1,21 @@
+# This .gitignore file should be placed at the root of your Unity project directory
+#
+# Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
+#
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Oo]bj/
+**/[Bb]uild/
+**/[Bb]uilds/
+**/[Ll]ogs/
+**/[Uu]ser[Ss]ettings/
 
 ChessTrainingAI/Library/ArtifactDB
 ChessTrainingAI/Library/Bee/fullprofile.json
 ChessTrainingAI/Library/SourceAssetDB
+ChessTrainingAI/Library/ArtifactDB
+ChessTrainingAI/Library/ArtifactDB-lock
+ChessTrainingAI/Library/Search/transactions.db
+ChessTrainingAI/Library/SourceAssetDB
+ChessTrainingAI/Library/SourceAssetDB-lock
+ChessTrainingAI/Logs/shadercompiler-UnityShaderCompiler.exe0.log
