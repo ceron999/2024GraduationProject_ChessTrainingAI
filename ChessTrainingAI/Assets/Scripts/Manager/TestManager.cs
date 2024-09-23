@@ -15,20 +15,26 @@ public class TestManager : MonoBehaviour
             Destroy(this.gameObject);
 
         SetTestBoard();
-        readyTest.AddListener(SetTestBoardInfo);
-        resetTest.AddListener(ResetTestInfo);
+        testReady.AddListener(SetTestBoardInfo);
     }
     #endregion
-    [SerializeField] GameObject tilePrefab;
+
+    [Header("테스트를 위한 보드, 기물, 타일")]
+    [SerializeField] GameObject testTilePrefab;
     [SerializeField] Transform testBoardParent;
     [SerializeField] Transform testPiecesParent;
 
-    public Tile[,] testTileList = new Tile[8, 8];               // 테스트를 진행할 대체 타일
-    public List<Piece> testWhitePieces = new List<Piece>();
-    public List<Piece> testBlackPieces = new List<Piece>();
+    [Header("테스트에 사용할 오브젝트")]
+    public TestTile[,] testTileList = new TestTile[8, 8];               // 테스트를 진행할 대체 타일
+    public List<TestPiece> testWhitePieces = new List<TestPiece>();
+    public List<TestPiece> testBlackPieces = new List<TestPiece>();
 
-    public UnityEvent readyTest;
-    public UnityEvent resetTest;
+    [Header("테스트 이벤트")]
+    public UnityEvent testReady;
+    public UnityEvent testStart;
+
+    [Header("체크메이트 확인 변수")]
+    public bool isCheckmate = false;
 
     private void Start()
     {
@@ -41,7 +47,7 @@ public class TestManager : MonoBehaviour
         for (int col = 0; col < 8; col++)
             for (int row = 0; row < 8; row++)
             {
-                Tile tile = Instantiate(tilePrefab, testBoardParent).GetComponent<Tile>();
+                TestTile tile = Instantiate(testTilePrefab, testBoardParent).GetComponent<TestTile>();
                 tile.transform.localPosition = new Vector2(row, col);
                 testTileList[row, col] = tile;
 
@@ -55,30 +61,37 @@ public class TestManager : MonoBehaviour
     // 테스트 보드에 현재 위치한 기물 정보 삽입
     void SetTestBoardInfo()
     {
-        Piece tempPiece;
-        Piece getLocatedPiece;
-        tempPiece = Instantiate(ChessManager.instance.chessTileList[0, 0].locatedPiece, testPiecesParent).GetComponent<Piece>();
+        // 현재 기물의 현재 위치를 가져와서 옮김
+    }
 
-        // 타일에 기물 정보 넣기
-
-        for (int col = 0; col < 8; col++)
-            for (int row = 0; row < 8; row++)
+    // 이제 모든 이동을 확인해 킹을 공격하는지 확인한다. 
+    void Test()
+    {
+        // 현재 턴이 검은색이면 흰색 기물을 이동시키고 검은색이 흰색 킹을 공격하는지 확인한다. 
+        if(ChessManager.instance.nowTurnColor == GameColor.Black)
+            for(int i = 0; i < testWhitePieces.Count; i++)
             {
-                if (ChessManager.instance.chessTileList[row, col].locatedPiece != null)
+                for (int moveCount = 0; moveCount < testWhitePieces[i].movableTIleList.Count; moveCount++)
                 {
-                    // 가져올 기물 정보 받고 카피
-                    getLocatedPiece = ChessManager.instance.chessTileList[row, col].locatedPiece;
-                    tempPiece.PieceInfoCopy(getLocatedPiece);
+                    // 기물 이동
+                    testWhitePieces[i].Move(testWhitePieces[i].movableTIleList[moveCount]);
 
-                    // 타일에 정보 저장
-                    testTileList[row,col].locatedPiece = tempPiece;
-                    tempPiece.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 0);
+                    // 체크 확인
+                }
+            }
+
+        else if (ChessManager.instance.nowTurnColor == GameColor.White)
+            for (int i = 0; i < testBlackPieces.Count; i++)
+            {
+                for (int moveCount = 0; moveCount < testBlackPieces[i].movableTIleList.Count; moveCount++)
+                {
+                    testBlackPieces[i].Move(testBlackPieces[i].movableTIleList[moveCount]);
                 }
             }
     }
 
     // 테스트 보드 초기화
-    void ResetTestInfo()
+    void ResetBoardInfo()
     {
         for (int col = 0; col < 8; col++)
             for (int row = 0; row < 8; row++)
@@ -87,23 +100,29 @@ public class TestManager : MonoBehaviour
             }
     }
 
-    #region 테스트 함수
-    void TestMovePiece(GameColor getNowTurnColor)
-    {
-        if(getNowTurnColor == GameColor.White)
-        {
-            
-        }
+    #region 체크 확인용 함수
+    //// 턴을 종료하기 전 체크인지 확인하는 함수
+    //public bool EvaluateIsCheck()
+    //{
+    //    if (nowTurnColor == GameColor.White)
+    //    {
+    //        // 1. 각 기물의 이동 타일, 공격 기물 설정
+    //        for (int i = 0; i < whitePiecesParent.childCount; i++)
+    //        {
+    //            if (whitePiecesParent.GetChild(i).GetComponent<Piece>().IsAttackKing())
+    //                return true;
+    //        }
+    //    }
+    //    else if (nowTurnColor == GameColor.Black)
+    //    {
+    //        for (int i = 0; i < blackPiecesParent.childCount; i++)
+    //        {
+    //            if (blackPiecesParent.GetChild(i).GetComponent<Piece>().IsAttackKing())
+    //                return true;
+    //        }
+    //    }
 
-        else if(getNowTurnColor == GameColor.Black)
-        {
-            
-        }
-    }
-
-    void RollBackTestMove()
-    {
-        // 원래 기물 돌려놓기
-    }
+    //    return false;
+    //}
     #endregion
 }

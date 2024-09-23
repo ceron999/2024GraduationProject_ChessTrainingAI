@@ -81,48 +81,4 @@ public class Pawn : Piece
     {
         return false;
     }
-
-    public override void TestMove()
-    {
-        // 흰색 : row가 증가하는 방향 <-> 검은색 : row가 감소하는 방향이 앞임.
-        direction = (pieceColor == GameColor.White) ? 1 : -1;
-
-        Tile nowTile = null;
-
-        Vector2Int forward1Pos = new Vector2Int(nowPos.x, nowPos.y + direction);
-        Vector2Int forward2Pos = new Vector2Int(nowPos.x, nowPos.y + direction * 2);
-
-        Vector2Int attact1Pos = new Vector2Int(nowPos.x - direction, nowPos.y + direction);    // 좌측 대각선
-        Vector2Int attact2Pos = new Vector2Int(nowPos.x + direction, nowPos.y + direction);    // 우측 대각선
-
-        // 1. 이동 타일 확인
-        //전방 2칸 이동 가능?
-        if (isFirstMove && ChessManager.instance.chessTileList[forward1Pos.x, forward1Pos.y].locatedPiece == null)
-        {
-            nowTile = ChessManager.instance.chessTileList[forward2Pos.x, forward2Pos.y];
-
-        }
-
-        //전방 1칸 이동 가능?
-        if (IsAvailableTIle(forward1Pos))
-        {
-            nowTile = ChessManager.instance.chessTileList[forward1Pos.x, forward1Pos.y];
-
-        }
-
-        // 2. 공격 기물 확인
-        // 좌측 대각선 1칸 공격 가능?
-        if (IsAvailableTIle(attact1Pos))
-        {
-            nowTile = ChessManager.instance.chessTileList[attact1Pos.x, attact1Pos.y];
-
-            
-        }
-
-        // 좌측 대각선 1칸 공격 가능?
-        if (IsAvailableTIle(attact2Pos))
-        {
-            
-        }
-    }
 }

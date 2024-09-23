@@ -21,8 +21,6 @@ public abstract class Piece : MonoBehaviour
     public List<Tile> movableTIleList = null;                      //현재 위치에서 이동 가능한 타일
     public List<Piece> attackPieceList = null;                      //현재 위치에서 이동 가능한 타일
 
-    bool isEvaluate = false;                            // 함수가 다 끝나기 전에 다른 기물을 건드리면 오류나서 생성한 함수
-
     public void PieceInfoCopy(Piece getInfo)
     {
         pieceType = getInfo.pieceType;
@@ -30,9 +28,7 @@ public abstract class Piece : MonoBehaviour
         nowPos = getInfo.nowPos;
     }
 
-
     public abstract void EvaluateMove();                //움직일 수 있는 타일 찾는 함수
-    public abstract void TestMove();
 
     /// <summary>
     /// 기물 이동하는 함수
@@ -86,53 +82,42 @@ public abstract class Piece : MonoBehaviour
         ChessManager.instance.turnEnd?.Invoke();
     }
 
-    private void OnMouseDown()
+    public void ShowMovableTiles()
     {
         // 현재 턴이 아니면 클릭 방지
         if (ChessManager.instance.nowTurnColor != pieceColor)
             return;
 
-        if (!isEvaluate)
+        // 1. 이전 기물과 현재 기물 정리
+        if(ChessManager.instance.nowPiece != null)
         {
-            isEvaluate = true;
-
-            // 1. 이전 기물과 현재 기물 정리
             Piece pastPiece = ChessManager.instance.nowPiece;
-            ChessManager.instance.nowPiece = this;
+            pastPiece.SetAvailableCircle(false);
+        }
+        SetAvailableCircle(true);
 
-            // 2. 이전 기물의 원 제거 + 현재 기물의 원 표시
-            if (pastPiece != null)
-                pastPiece.SetAvailableCircle(false);
-            
-            SetAvailableCircle(true);
-
-            isEvaluate = false;
-        }    
+        ChessManager.instance.nowPiece = this;
     }
 
     // 이동 가능한 타일임을 보이는 원을 보이게할지 안보이게할지 설정하는 함수
-    public void SetAvailableCircle(bool isActive)
+    void SetAvailableCircle(bool isActive)
     {
         if(movableTIleList.Count >0)
             for(int i =0; i< movableTIleList.Count; i++)
             {
-                movableTIleList [i].SetAvailableCircle(true);
+                movableTIleList [i].SetAvailableCircle(isActive);
             }
     }
 
     #region 타일 이동 가능 및 공격 기물 확인 함수
     //해당 타일이 존재하는가? -> 인덱스 초과를 확인하기 위해 만든 함수
-    public bool IsAvailableTIle(Vector2Int getTIleVector)
+    protected bool IsAvailableTIle(Vector2Int getTIleVector)
     {
-        Tile nowTile = null;
-        try
-        {
-            nowTile = ChessManager.instance.chessTileList[getTIleVector.x, getTIleVector.y];
-        }
-        catch
-        {
+        if (getTIleVector.x < 0 || getTIleVector.x > 7)
             return false;
-        }
+        else if (getTIleVector.y < 0 || getTIleVector.y > 7)
+            return false;
+
         return true;
     }
 

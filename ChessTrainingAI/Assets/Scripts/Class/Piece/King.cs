@@ -200,9 +200,4 @@ public class King : Piece
         }
         else return false;
     }
-
-    public override void TestMove()
-    {
-
-    }
 }

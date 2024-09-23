@@ -182,9 +182,4 @@ public class Bishop : Piece
         }
     }
     #endregion
-
-    public override void TestMove()
-    {
-
-    }
 }

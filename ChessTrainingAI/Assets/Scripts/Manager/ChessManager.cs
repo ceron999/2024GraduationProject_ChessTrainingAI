@@ -93,12 +93,15 @@ public class ChessManager : MonoBehaviour
     public bool isCheckmate = false;
     #endregion 턴 이벤트
 
+    #region 오류 방지 이벤트
+    public bool isClickAvailable = true;
+    #endregion 오류 방지 이벤트
+
     void Start()
     {
         // 체스판, 기물 위치시키기
         SetChessBoard();
         SetChessPiece();
-        SetPlayerColor();
 
         // 턴 함수 설정
         gameStart.AddListener(GameStart);
@@ -406,7 +409,7 @@ public class ChessManager : MonoBehaviour
     }
     #endregion
 
-    #region 턴 관련 함수
+    #region 게임 시작 및 턴 종료 함수
     void GameStart()
     {
         // 1. 플레이어 색 선정 후 카메라 이동
@@ -420,6 +423,7 @@ public class ChessManager : MonoBehaviour
     //턴 종료
     public void EndTurn()
     {
+        Debug.Log("turnENd");
         // 1. 이동 가능 타일 표시 기능 끄기
         for (int i = 0; i < nowPiece.movableTIleList.Count; i++)
         {
@@ -438,30 +442,6 @@ public class ChessManager : MonoBehaviour
 
         // 3. 이제 턴을 진행할 색 지정
         nowTurnColor = (nowTurnColor == GameColor.White) ? GameColor.Black : GameColor.White;
-    }
-
-    // 턴을 종료하기 전 체크인지 확인하는 함수
-    public bool EvaluateIsCheck()
-    {
-        if (nowTurnColor == GameColor.White)
-        {
-            // 1. 각 기물의 이동 타일, 공격 기물 설정
-            for (int i = 0; i < whitePiecesParent.childCount; i++)
-            {
-                if (whitePiecesParent.GetChild(i).GetComponent<Piece>().IsAttackKing())
-                    return true;
-            }
-        }
-        else if (nowTurnColor == GameColor.Black)
-        {
-            for (int i = 0; i < blackPiecesParent.childCount; i++)
-            {
-                if (whitePiecesParent.GetChild(i).GetComponent<Piece>().IsAttackKing())
-                    return true;
-            }
-        }
-
-        return false;
     }
 
     void Check()
@@ -493,7 +473,31 @@ public class ChessManager : MonoBehaviour
         }
 
         // 2. 킹 앞을 가로막을 수 있는 기물이 존재하는가?
-        TestManager.Instance.readyTest?.Invoke();
+        TestManager.Instance.testReady?.Invoke();
+
+        return false;
+    }
+
+    // 턴을 종료하기 전 체크인지 확인하는 함수
+    public bool EvaluateIsCheck()
+    {
+        if (nowTurnColor == GameColor.White)
+        {
+            // 1. 각 기물의 이동 타일, 공격 기물 설정
+            for (int i = 0; i < whitePiecesParent.childCount; i++)
+            {
+                if (whitePiecesParent.GetChild(i).GetComponent<Piece>().IsAttackKing())
+                    return true;
+            }
+        }
+        else if (nowTurnColor == GameColor.Black)
+        {
+            for (int i = 0; i < blackPiecesParent.childCount; i++)
+            {
+                if (blackPiecesParent.GetChild(i).GetComponent<Piece>().IsAttackKing())
+                    return true;
+            }
+        }
 
         return false;
     }
