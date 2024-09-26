@@ -141,61 +141,69 @@ public class King : Piece
     public bool Castling(Tile getTile)
     {
         Tile nowTIle = ChessManager.instance.chessTileList[nowPos.x, nowPos.y];
-
-        if (getTile.tileName == TIleName.a3)
+        
+        if (getTile.tileName == TIleName.c1)
         {
+            isFirstMove = false;
             // 흰색 퀸사이드 캐슬링
             // 1. 위치 이동
             this.transform.position = getTile.transform.position;
             nowRooks[0].transform.position = ChessManager.instance.chessTileList[3,0].transform.position;
 
             // 2. 해당 타일 정보 수정
+            ChessManager.instance.chessTileList[0, 0].locatedPiece = null;
             nowTIle.locatedPiece = null;
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[3, 0].locatedPiece = nowRooks[0];
-
+            nowRooks[0].nowPos = new Vector2Int(3, 0);
             return true;
         }
-        else if (getTile.tileName == TIleName.a7)
+        else if (getTile.tileName == TIleName.g1)
         {
+            isFirstMove = false;
             // 흰색 킹사이드 캐슬링
             // 1. 위치 이동
             this.transform.position = getTile.transform.position;
             nowRooks[1].transform.position = ChessManager.instance.chessTileList[5, 0].transform.position;
 
             // 2. 해당 타일 정보 수정
+            ChessManager.instance.chessTileList[7, 0].locatedPiece = null;
             nowTIle.locatedPiece = null;
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[5, 0].locatedPiece = nowRooks[1];
-
+            nowRooks[1].nowPos = new Vector2Int(5, 0);
             return true;
         }
-        else if (getTile.tileName == TIleName.h3)
+        else if (getTile.tileName == TIleName.c8)
         {
+            isFirstMove = false;
             // 검은색 퀸사이드 캐슬링
             // 1. 위치 이동
             this.transform.position = getTile.transform.position;
             nowRooks[0].transform.position = ChessManager.instance.chessTileList[3, 7].transform.position;
 
             // 2. 해당 타일 정보 수정
+            ChessManager.instance.chessTileList[0, 7].locatedPiece = null;
             nowTIle.locatedPiece = null;
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[3, 7].locatedPiece = nowRooks[0];
-
+            nowRooks[0].nowPos = new Vector2Int(3, 7);
             return true;
         }
-        else if (getTile.tileName == TIleName.h7)
+        else if (getTile.tileName == TIleName.g8)
         {
+            isFirstMove = false;
             // 검은색 킹사이드 캐슬링
             // 1. 위치 이동
             this.transform.position = getTile.transform.position;
             nowRooks[1].transform.position = ChessManager.instance.chessTileList[5, 7].transform.position;
 
             // 2. 해당 타일 정보 수정
+            ChessManager.instance.chessTileList[7, 7].locatedPiece = null;
             nowTIle.locatedPiece = null;
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[5, 7].locatedPiece = nowRooks[1];
-
+            nowRooks[1].nowPos = new Vector2Int(5, 7);
             return true;
         }
         else return false;

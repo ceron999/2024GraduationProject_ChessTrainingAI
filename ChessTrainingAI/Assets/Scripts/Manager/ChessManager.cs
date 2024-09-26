@@ -418,6 +418,7 @@ public class ChessManager : MonoBehaviour
         // 2. 기물의 이동 타일과 공격 기물 설정
         SetTilesInfo();
         SetPiecesInfo();
+        SetKingInfo();
     }
 
     //턴 종료

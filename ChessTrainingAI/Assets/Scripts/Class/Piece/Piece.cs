@@ -56,12 +56,13 @@ public abstract class Piece : MonoBehaviour
         Tile nowTIle = ChessManager.instance.chessTileList[nowPos.x, nowPos.y];
 
         // 1. 특수한 움직임 우선 판단
-        // 폰이나 킹, 룩의 경우 특수 움직임 조건 설정
-        SetPieceSpecialInfo();
 
         // 폰이나 킹, 룩의 경우 특수 움직임
         if (IsSpecialMove(selectTIle))
             return;
+
+        // 폰이나 킹, 룩의 경우 특수 움직임 조건 설정
+        SetPieceSpecialInfo();
 
         // 2. 일반적인 움직임 판단
         // 2-1. 현재 Piece 위치 변경
@@ -170,7 +171,7 @@ public abstract class Piece : MonoBehaviour
             // 0. 이미 1회 움직였으면 불가능
             if (!GetComponent<King>().isFirstMove)
                 return false;
-
+            
             // 1. 캐슬링
             if (GetComponent<King>().Castling(getTile))
             {
