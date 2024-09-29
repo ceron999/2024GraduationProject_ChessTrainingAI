@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Pawn : Piece
 {
@@ -79,6 +80,11 @@ public class Pawn : Piece
 
     public bool Promotion(Tile getTile)
     {
+        if(getTile.transform.position.y == 0 || getTile.transform.position.y == 7)
+        {
+            // 끝에 도달할 경우 프로모션 시작
+            ChessManager.instance.promotionUI.SetActive(true);
+        }
         return false;
     }
 }

@@ -190,7 +190,6 @@ public abstract class Piece : MonoBehaviour
             // 2. 폰 프로모션 or 앙파상
             if (GetComponent<Pawn>().Promotion(getTile))
             {
-                ChessManager.instance.turnEnd?.Invoke();
                 return true;
             }
             else return false;

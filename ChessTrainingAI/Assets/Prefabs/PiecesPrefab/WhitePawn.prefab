@@ -101,9 +101,11 @@ MonoBehaviour:
   pieceType: 0
   pieceColor: 0
   nowPos: {x: 0, y: 0}
-  movableTIles: []
-  isClickPiece: 0
-  isEnPassant: 0
+  movableTIleList: []
+  attackPieceList: []
+  promotionUI: {fileID: 0}
+  isFirstMove: 1
+  isCanEnPassant: 0
 --- !u!65 &3225179025296085378
 BoxCollider:
   m_ObjectHideFlags: 0
