@@ -68,7 +68,7 @@ public abstract class Piece : MonoBehaviour
         }
 
         // 2-3. 타일 정보 재설정
-        nowTIle.locatedPiece = null;
+        nowTIle.locatedPiece = null; 
         selectTIle.locatedPiece = this.GetComponent<Piece>();
 
         //모두 끝낸 후 턴 종료
@@ -175,13 +175,10 @@ public abstract class Piece : MonoBehaviour
         }
         else if (pieceType == PieceType.Pawn)
         {
-            // 0. 이미 1회 움직였으면 불가능
-            if (!GetComponent<Pawn>().isFirstMove)
-                return false;
-
             // 2. 폰 프로모션 or 앙파상
             if (GetComponent<Pawn>().Promotion(getTile))
             {
+                Debug.Log("promotion 시작");
                 return true;
             }
             else return false;

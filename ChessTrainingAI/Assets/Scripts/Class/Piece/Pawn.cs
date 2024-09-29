@@ -83,7 +83,22 @@ public class Pawn : Piece
         if(getTile.transform.position.y == 0 || getTile.transform.position.y == 7)
         {
             // 끝에 도달할 경우 프로모션 시작
+            // 2. 일반적인 움직임 판단
+            // 2-1. 현재 Piece 위치 변경
+            this.transform.position = getTile.transform.position;
+            nowPos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+
+            // 2-2. 해당 타일에 적 piece가 존재할 경우 해당 기물 파괴
+            if (getTile.locatedPiece != null)
+            {
+                Destroy(getTile.locatedPiece.gameObject);
+            }
+
+            // 2-3. 타일 정보 재설정
+            ChessManager.instance.chessTileList[nowPos.x, nowPos.y].locatedPiece = null;
+
             ChessManager.instance.promotionUI.SetActive(true);
+            return true;
         }
         return false;
     }

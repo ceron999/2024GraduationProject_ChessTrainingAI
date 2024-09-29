@@ -151,7 +151,7 @@ public class ChessManager : MonoBehaviour
 
     void SetChessPiece()
     {
-        //SetPawn(GameColor.White);
+        SetPawn(GameColor.White);
         SetKnight(GameColor.White);
         SetBishop(GameColor.White);
         SetQueen(GameColor.White);
@@ -164,6 +164,17 @@ public class ChessManager : MonoBehaviour
         //SetQueen(GameColor.Black);
         SetKing(GameColor.Black);
         SetRook(GameColor.Black);
+    }
+
+    void SetPiece(Piece getPiece, GameColor getColor ,Vector2Int getVector)
+    {
+        getPiece.transform.position = new Vector2(getVector.x, getVector.y);
+        getPiece.nowPos = getVector;
+        getPiece.pieceColor = getColor;
+
+        chessTileList[getVector.x, getVector.y].locatedPiece = getPiece;
+
+        Destroy(nowPiece.gameObject);
     }
 
     void SetPawn(GameColor getColor)
@@ -601,5 +612,74 @@ public class ChessManager : MonoBehaviour
     }
     #endregion
 
-    
+    #region 프로모션
+    public void Promotion(int type)
+    {
+        GameColor getColor = nowPiece.pieceColor;
+        Vector2Int getPos = nowPiece.nowPos;
+
+        switch (type)
+        {
+            case 2:
+                if(getColor == GameColor.White)
+                {
+                    Piece piece = Instantiate(whiteKnightPrefab, whitePiecesParent).GetComponent<Piece>();
+                    piece.pieceType = PieceType.Knight;
+                    SetPiece(piece, getColor, getPos);
+                }
+                else
+                {
+                    Piece piece = Instantiate(blackKnightPrefab, blackPiecesParent).GetComponent<Piece>();
+                    piece.pieceType = PieceType.Knight;
+                    SetPiece(piece, getColor, getPos);
+                }
+                break;
+            case 3:
+                if (getColor == GameColor.White)
+                {
+                    Piece piece = Instantiate(whiteBishopPrefab, whitePiecesParent).GetComponent<Piece>();
+                    piece.pieceType = PieceType.Bishop;
+                    SetPiece(piece, getColor, getPos);
+                }
+                else
+                {
+                    Piece piece = Instantiate(blackBishopPrefab, blackPiecesParent).GetComponent<Piece>();
+                    piece.pieceType = PieceType.Bishop;
+                    SetPiece(piece, getColor, getPos);
+                }
+                break;
+            case 4:
+                if (getColor == GameColor.White)
+                {
+                    Piece piece = Instantiate(whiteRookPrefab, whitePiecesParent).GetComponent<Piece>();
+                    piece.pieceType = PieceType.Rook;
+                    SetPiece(piece, getColor, getPos);
+                }
+                else
+                {
+                    Piece piece = Instantiate(blackRookPrefab, blackPiecesParent).GetComponent<Piece>();
+                    piece.pieceType = PieceType.Knight;
+                    SetPiece(piece, getColor, getPos);
+                }
+                break;
+            case 5:
+                if (getColor == GameColor.White)
+                {
+                    Piece piece = Instantiate(whiteQueenPrefab, whitePiecesParent).GetComponent<Piece>();
+                    piece.pieceType = PieceType.Queen;
+                    SetPiece(piece, getColor, getPos);
+                }
+                else
+                {
+                    Piece piece = Instantiate(blackQueenPrefab, blackPiecesParent).GetComponent<Piece>();
+                    piece.pieceType = PieceType.Queen;
+                    SetPiece(piece, getColor, getPos);
+                }
+                break;
+        }
+
+        promotionUI.SetActive(false);
+        turnEnd?.Invoke();
+    }
+    #endregion
 }
