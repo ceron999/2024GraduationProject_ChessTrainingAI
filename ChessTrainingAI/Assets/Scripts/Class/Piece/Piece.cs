@@ -20,14 +20,6 @@ public abstract class Piece : MonoBehaviour
     public Vector2Int nowPos;
     public List<Tile> movableTIleList = null;                      //현재 위치에서 이동 가능한 타일
     public List<Piece> attackPieceList = null;                      //현재 위치에서 이동 가능한 타일
-
-    public void PieceInfoCopy(Piece getInfo)
-    {
-        pieceType = getInfo.pieceType;
-        pieceColor = getInfo.pieceColor;
-        nowPos = getInfo.nowPos;
-    }
-
     public abstract void EvaluateMove();                //움직일 수 있는 타일 찾는 함수
 
     /// <summary>

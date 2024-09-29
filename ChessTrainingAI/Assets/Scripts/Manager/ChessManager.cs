@@ -6,6 +6,8 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Events;
 using Unity.VisualScripting;
+using UnityEngine.AI;
+using TMPro;
 
 public enum GameColor
 { 
@@ -29,7 +31,11 @@ public class ChessManager : MonoBehaviour
         }
     }
     #endregion
-
+    #region UI
+    public GameObject promotionUI;
+    public GameObject gameEndUI;
+    public TextMeshProUGUI gameEndText;
+    #endregion
     public Camera mainCamera;          //흑백에 따라 보는 관점 바꾸려고 가져온 카메라
 
     #region 타일, 보드판 정보
@@ -145,17 +151,17 @@ public class ChessManager : MonoBehaviour
 
     void SetChessPiece()
     {
-        SetPawn(GameColor.White);
+        //SetPawn(GameColor.White);
         SetKnight(GameColor.White);
         SetBishop(GameColor.White);
         SetQueen(GameColor.White);
         SetKing(GameColor.White);
         SetRook(GameColor.White);
 
-        SetPawn(GameColor.Black);
-        SetKnight(GameColor.Black);
-        SetBishop(GameColor.Black);
-        SetQueen(GameColor.Black);
+        //SetPawn(GameColor.Black);
+        //SetKnight(GameColor.Black);
+        //SetBishop(GameColor.Black);
+        //SetQueen(GameColor.Black);
         SetKing(GameColor.Black);
         SetRook(GameColor.Black);
     }
@@ -424,7 +430,7 @@ public class ChessManager : MonoBehaviour
     //턴 종료
     public void EndTurn()
     {
-        Debug.Log("turnENd");
+        Debug.Log("turnEnd");
         // 1. 이동 가능 타일 표시 기능 끄기
         for (int i = 0; i < nowPiece.movableTIleList.Count; i++)
         {
@@ -437,7 +443,11 @@ public class ChessManager : MonoBehaviour
         SetPiecesInfo();
 
         if (EvaluateIsCheck())
+        {
+            SetKingInfo();
             check?.Invoke();
+            return;
+        }
 
         SetKingInfo();
 
@@ -450,13 +460,22 @@ public class ChessManager : MonoBehaviour
         Debug.Log("Check");
         isCheck = true;
 
-        // 1. 체크메이트인지 확인
-        if (IsCheckmate())
-            return;
-
         // 체크 소리 진행
 
-        // 다음 수가 체크가 풀리는지 확인하도록 조건 하나를 추가함
+        // 1. 체크메이트인지 확인
+        if (IsCheckmate())
+        {
+            // 현재 색깔 승리
+            gameEndUI.SetActive(true);
+            gameEndText.text = nowTurnColor + " Win!";
+            return;
+        }
+        else
+        {
+            // 체크 아니므로 상대 턴 시작
+            Debug.Log("체크 아님");
+            nowTurnColor = (nowTurnColor == GameColor.White) ? GameColor.Black : GameColor.White;
+        }
     }
 
     bool IsCheckmate()
@@ -467,14 +486,17 @@ public class ChessManager : MonoBehaviour
             if (blackKing.movableTIleList.Count > 0)
                 return false;
         }
-        else
+        else if(nowTurnColor == GameColor.Black)
         {
             if (whiteKing.movableTIleList.Count > 0)
                 return false;
         }
-
+        
         // 2. 킹 앞을 가로막을 수 있는 기물이 존재하는가?
         TestManager.Instance.testReady?.Invoke();
+
+        if (isCheckmate)
+            return true;
 
         return false;
     }

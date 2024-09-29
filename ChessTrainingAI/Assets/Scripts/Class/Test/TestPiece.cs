@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestPiece : MonoBehaviour
+[System.Serializable]
+public class TestPiece
 {
     #region 기물 정보
     [Header("기물 정보")]
@@ -15,17 +16,45 @@ public class TestPiece : MonoBehaviour
     public List<TestTile> movableTIleList = null;                      //현재 위치에서 이동 가능한 타일
     public List<TestPiece> attackPieceList = null;                      //현재 위치에서 이동 가능한 타일
 
+    public TestPiece()
+    {
+        pieceType = PieceType.Null;
+        pieceColor = GameColor.Null;
+        nowPos = Vector2Int.zero;
+        movableTIleList = new List<TestTile>();
+        attackPieceList = new List<TestPiece>();
+    }
+
+    public virtual void SetAttackPieceList()
+    {
+
+    }
+
+    // Piece -> testPiece로 정보를 변환하는 함수
+    public void SetPieceInfo(Piece getPiece)
+    {
+        pieceType = getPiece.pieceType;
+        pieceColor = getPiece.pieceColor;
+        nowPos = getPiece.nowPos;
+
+        movableTIleList.Clear();
+        for (int i = 0; i < getPiece.movableTIleList.Count; i++)
+        {
+            movableTIleList.Add(TestManager.Instance.ConvertTile2TestTile(getPiece.movableTIleList[i]));
+        }
+
+        attackPieceList.Clear();
+        for (int i = 0; i < getPiece.attackPieceList.Count; i++)
+        {
+            attackPieceList.Add(TestManager.Instance.ConvertPiece2TestPiece(getPiece.attackPieceList[i]));
+        }
+    }
+
     public void Move(TestTile getTile)
     {
         TestTile nowTile = TestManager.Instance.testTileList[nowPos.x, nowPos.y];
 
         nowTile.locatedPiece = null;
-
-        // 해당 위치에 기물 존재하면 해당 기물 
-        if (getTile.locatedPiece != null)
-        {
-
-        }
         getTile.locatedPiece = this;
     }
 
@@ -43,6 +72,7 @@ public class TestPiece : MonoBehaviour
 
     public bool IsAttackKing()
     {
+
         if (attackPieceList.Count == 0)
             return false;
 
