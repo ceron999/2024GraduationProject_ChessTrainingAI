@@ -143,6 +143,7 @@ public class Rook : Piece
             if (nowTIle.locatedPiece.pieceColor == pieceColor)
             {
                 isEvaluateSkip = true;
+                SetIsColorAttack(nowTIle);
                 return;
             }
 

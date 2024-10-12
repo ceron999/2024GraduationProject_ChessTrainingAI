@@ -189,6 +189,7 @@ public abstract class Piece : MonoBehaviour
 
     public void SetIsColorAttack(Tile getTile)
     {
+        Debug.Log(this.nowPos + this.gameObject.name + " 의 공격 타일 설정 : " + getTile.tileName);
         if (pieceColor == GameColor.White)
         {
             getTile.isWhiteAttack = true;

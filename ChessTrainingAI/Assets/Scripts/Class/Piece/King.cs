@@ -32,7 +32,7 @@ public class King : Piece
                 continue;
 
             Tile nowTile = ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y];
-            
+            SetIsColorAttack(nowTile);
             // 2. 해당 위치가 공격당하는 위치일 경우 넘어감
             if (pieceColor == GameColor.White)
             {

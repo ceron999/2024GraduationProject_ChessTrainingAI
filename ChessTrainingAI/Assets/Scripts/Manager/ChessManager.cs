@@ -158,10 +158,10 @@ public class ChessManager : MonoBehaviour
         SetKing(GameColor.White);
         SetRook(GameColor.White);
 
-        //SetPawn(GameColor.Black);
-        //SetKnight(GameColor.Black);
-        //SetBishop(GameColor.Black);
-        //SetQueen(GameColor.Black);
+        SetPawn(GameColor.Black);
+        SetKnight(GameColor.Black);
+        SetBishop(GameColor.Black);
+        SetQueen(GameColor.Black);
         SetKing(GameColor.Black);
         SetRook(GameColor.Black);
     }

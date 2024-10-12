@@ -23,10 +23,11 @@ public class Knight : Piece
             if (!IsAvailableTIle(targetVector[i]))
                 continue;
 
+            SetIsColorAttack(ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y]);
+
             // 2. 해당하는 타일의 기물이 없으면 추가함
             if (ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y].locatedPiece == null)
             {
-                SetIsColorAttack(ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y]);
                 movableTIleList.Add(ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y]);
                 continue;
             }
@@ -34,7 +35,6 @@ public class Knight : Piece
             // 3. 해당하는 타일의 기물 색 != 선택한 기물의 색이면 공격 기물 추가, 이동 타일 추가
             if (ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y].locatedPiece.pieceColor != pieceColor)
             {
-                SetIsColorAttack(ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y]);
                 attackPieceList.Add(ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y].locatedPiece);
                 movableTIleList.Add(ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y]);
                 continue;

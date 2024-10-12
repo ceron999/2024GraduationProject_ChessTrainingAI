@@ -54,10 +54,10 @@ public class Pawn : Piece
                 if (nowTile.locatedPiece.pieceColor != pieceColor)
                 {
                     movableTIleList.Add(nowTile);
-                    SetIsColorAttack(nowTile);
                     attackPieceList.Add(nowTile.locatedPiece);
                 }
             }
+            SetIsColorAttack(nowTile);
         }
 
         // ÁÂÃø ´ë°¢¼± 1Ä­ °ø°Ý °¡´É?
@@ -71,10 +71,10 @@ public class Pawn : Piece
                 if (nowTile.locatedPiece.pieceColor != pieceColor)
                 {
                     movableTIleList.Add(nowTile);
-                    SetIsColorAttack(nowTile);
                     attackPieceList.Add(nowTile.locatedPiece);
                 }
             }
+            SetIsColorAttack(nowTile);
         }
     }
 
