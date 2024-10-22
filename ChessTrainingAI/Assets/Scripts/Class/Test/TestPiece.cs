@@ -78,7 +78,7 @@ public class TestPiece
 
         for (int i = 0; i < attackPieceList.Count; i++)
         {
-            if (attackPieceList[i].pieceType == PieceType.King)
+            if (attackPieceList[i].pieceType == PieceType.K)
                 return true;
         }
         return false;

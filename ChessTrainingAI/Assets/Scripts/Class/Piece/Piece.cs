@@ -5,7 +5,7 @@ using UnityEngine;
 public enum PieceType
 {
     Null, 
-    Pawn, Knight, Bishop, Rook, Queen, King, //1~ 6
+    P, N, B, R, Q, K, //1~ 6
 }
 
 public abstract class Piece : MonoBehaviour
@@ -65,6 +65,11 @@ public abstract class Piece : MonoBehaviour
         if (selectTIle.locatedPiece != null)
         {
             Destroy(selectTIle.locatedPiece.gameObject);
+            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), selectTIle, true);
+        }
+        else
+        {
+            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), selectTIle, false);
         }
 
         // 2-3. 타일 정보 재설정
@@ -121,7 +126,7 @@ public abstract class Piece : MonoBehaviour
 
         for(int i =0; i<attackPieceList.Count; i++)
         {
-            if (attackPieceList[i].pieceType == PieceType.King)
+            if (attackPieceList[i].pieceType == PieceType.K)
                 return true;
         }
         return false;
@@ -134,20 +139,20 @@ public abstract class Piece : MonoBehaviour
     void SetPieceSpecialInfo()
     {
         //1. 폰
-        if (ChessManager.instance.nowPiece.pieceType == PieceType.Pawn)
+        if (ChessManager.instance.nowPiece.pieceType == PieceType.P)
         {
             //1. 처음 2칸 이동 해제
             if(ChessManager.instance.nowPiece.GetComponent<Pawn>().isFirstMove)
                 ChessManager.instance.nowPiece.GetComponent<Pawn>().isFirstMove = false;
         }
 
-        else if(ChessManager.instance.nowPiece.pieceType == PieceType.Rook)
+        else if(ChessManager.instance.nowPiece.pieceType == PieceType.R)
         {
             if (ChessManager.instance.nowPiece.GetComponent<Rook>().isFirstMove)
                 ChessManager.instance.nowPiece.GetComponent<Rook>().isFirstMove = false;
         }
 
-        else if (ChessManager.instance.nowPiece.pieceType == PieceType.King)
+        else if (ChessManager.instance.nowPiece.pieceType == PieceType.K)
         {
             if (ChessManager.instance.nowPiece.GetComponent<King>().isFirstMove)
             {
@@ -158,7 +163,7 @@ public abstract class Piece : MonoBehaviour
 
     bool IsSpecialMove(Tile getTile)
     {
-        if (pieceType == PieceType.King)
+        if (pieceType == PieceType.K)
         {
             // 0. 이미 1회 움직였으면 불가능
             if (!GetComponent<King>().isFirstMove)
@@ -173,7 +178,7 @@ public abstract class Piece : MonoBehaviour
             else return false;
 
         }
-        else if (pieceType == PieceType.Pawn)
+        else if (pieceType == PieceType.P)
         {
             // 2. 폰 프로모션 or 앙파상
             if (GetComponent<Pawn>().Promotion(getTile))

@@ -220,22 +220,22 @@ public class TestManager : MonoBehaviour
         TestPiece temp;
         switch (getPiece.pieceType)
         {
-            case PieceType.Pawn:
+            case PieceType.P:
                 temp = new TestPawn();
                 break;
-            case PieceType.Knight:
+            case PieceType.N:
                 temp = new TestKnight();
                 break;
-            case PieceType.Bishop:
+            case PieceType.B:
                 temp = new TestBishop();
                 break;
-            case PieceType.Rook:
+            case PieceType.R:
                 temp = new TestRook();
                 break;
-            case PieceType.Queen:
+            case PieceType.Q:
                 temp = new TestQueen();
                 break;
-            case PieceType.King:
+            case PieceType.K:
                 temp = new TestKing();
                 break;
             default:

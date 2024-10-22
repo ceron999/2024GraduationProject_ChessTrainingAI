@@ -91,6 +91,7 @@ public class ChessManager : MonoBehaviour
     #endregion
 
     #region 턴 이벤트
+    public int nowTurn = 0;
     public UnityEvent gameStart;
     public UnityEvent turnEnd;
 
@@ -189,7 +190,7 @@ public class ChessManager : MonoBehaviour
                 piecePrefab = Instantiate(blackPawnPrefab, blackPiecesParent);
                 piecePrefab.GetComponent<Transform>().position = new Vector2(i, 6);
                 piecePrefab.GetComponent<Piece>().nowPos = new Vector2Int(i, 6);
-                piecePrefab.GetComponent<Piece>().pieceType = PieceType.Pawn;
+                piecePrefab.GetComponent<Piece>().pieceType = PieceType.P;
                 piecePrefab.GetComponent<Piece>().pieceColor = GameColor.Black;
 
                 chessTileList[i, 6].locatedPiece = piecePrefab.GetComponent<Piece>();
@@ -199,7 +200,7 @@ public class ChessManager : MonoBehaviour
                 piecePrefab = Instantiate(whitePawnPrefab, whitePiecesParent);
                 piecePrefab.GetComponent<Transform>().position = new Vector2(i, 1);
                 piecePrefab.GetComponent<Piece>().nowPos = new Vector2Int(i, 1);
-                piecePrefab.GetComponent<Piece>().pieceType = PieceType.Pawn;
+                piecePrefab.GetComponent<Piece>().pieceType = PieceType.P;
                 piecePrefab.GetComponent<Piece>().pieceColor = GameColor.White;
 
                 chessTileList[i, 1].locatedPiece = piecePrefab.GetComponent<Piece>();
@@ -225,8 +226,8 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(1, 7);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(6, 7);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Knight;
-            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.Knight;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.N;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.N;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.Black;
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.Black;
 
@@ -244,8 +245,8 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(1, 0);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(6, 0);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Knight;
-            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.Knight;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.N;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.N;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.White;
 
@@ -274,8 +275,8 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(2, 7);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(5, 7);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Bishop;
-            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.Bishop;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.B;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.B;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.Black;
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.Black;
 
@@ -293,8 +294,8 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(2, 0);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(5, 0);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Bishop;
-            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.Bishop;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.B;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.B;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.White;
 
@@ -322,8 +323,8 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(0, 7);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(7, 7);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Rook;
-            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.Rook;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.R;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.R;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.Black;
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.Black;
 
@@ -344,8 +345,8 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(0, 0);
             piecePrefab2.GetComponent<Piece>().nowPos = new Vector2Int(7, 0);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Rook;
-            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.Rook;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.R;
+            piecePrefab2.GetComponent<Piece>().pieceType = PieceType.R;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
             piecePrefab2.GetComponent<Piece>().pieceColor = GameColor.White;
 
@@ -371,7 +372,7 @@ public class ChessManager : MonoBehaviour
             piecePrefab1 = Instantiate(blackQueenPrefab, blackPiecesParent);
             piecePrefab1.GetComponent<Transform>().position = new Vector2(3, 7);
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(3, 7);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Queen;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Q;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.Black;
 
             chessTileList[3, 7].locatedPiece = piecePrefab1.GetComponent<Piece>();
@@ -381,7 +382,7 @@ public class ChessManager : MonoBehaviour
             piecePrefab1 = Instantiate(whiteQueenPrefab, whitePiecesParent);
             piecePrefab1.GetComponent<Transform>().position = new Vector2(3, 0);
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(3, 0);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Queen;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.Q;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
 
             chessTileList[3, 0].locatedPiece = piecePrefab1.GetComponent<Piece>();
@@ -402,7 +403,7 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Transform>().position = new Vector2(4, 7);
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(4, 7);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.King;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.K;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.Black;
 
             chessTileList[4, 7].locatedPiece = piecePrefab1.GetComponent<Piece>();
@@ -414,7 +415,7 @@ public class ChessManager : MonoBehaviour
 
             piecePrefab1.GetComponent<Transform>().position = new Vector2(4, 0);
             piecePrefab1.GetComponent<Piece>().nowPos = new Vector2Int(4, 0);
-            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.King;
+            piecePrefab1.GetComponent<Piece>().pieceType = PieceType.K;
             piecePrefab1.GetComponent<Piece>().pieceColor = GameColor.White;
 
             chessTileList[4, 0].locatedPiece = piecePrefab1.GetComponent<Piece>();
@@ -464,6 +465,12 @@ public class ChessManager : MonoBehaviour
 
         // 3. 이제 턴을 진행할 색 지정
         nowTurnColor = (nowTurnColor == GameColor.White) ? GameColor.Black : GameColor.White;
+
+        // 4. 현재 턴 증가
+        if (nowTurnColor == GameColor.White)
+        {
+            nowTurn++;
+        }
     }
 
     void Check()
@@ -581,7 +588,7 @@ public class ChessManager : MonoBehaviour
         for (int i = 0; i < whitePiecesParent.childCount; i++)
         {
             // 킹은 마지막에 다 설정하고 해야하므로 패스
-            if (whitePiecesParent.GetChild(i).GetComponent<Piece>().pieceType == PieceType.King)
+            if (whitePiecesParent.GetChild(i).GetComponent<Piece>().pieceType == PieceType.K)
                 continue;
 
             whitePiecesParent.GetChild(i).GetComponent<Piece>().movableTIleList.Clear();
@@ -591,7 +598,7 @@ public class ChessManager : MonoBehaviour
         for (int i = 0; i < blackPiecesParent.childCount; i++)
         {
             // 킹은 마지막에 다 설정하고 해야하므로 패스
-            if (blackPiecesParent.GetChild(i).GetComponent<Piece>().pieceType == PieceType.King)
+            if (blackPiecesParent.GetChild(i).GetComponent<Piece>().pieceType == PieceType.K)
                 continue;
 
             blackPiecesParent.GetChild(i).GetComponent<Piece>().movableTIleList.Clear();
@@ -624,13 +631,13 @@ public class ChessManager : MonoBehaviour
                 if(getColor == GameColor.White)
                 {
                     Piece piece = Instantiate(whiteKnightPrefab, whitePiecesParent).GetComponent<Piece>();
-                    piece.pieceType = PieceType.Knight;
+                    piece.pieceType = PieceType.N;
                     SetPiece(piece, getColor, getPos);
                 }
                 else
                 {
                     Piece piece = Instantiate(blackKnightPrefab, blackPiecesParent).GetComponent<Piece>();
-                    piece.pieceType = PieceType.Knight;
+                    piece.pieceType = PieceType.N;
                     SetPiece(piece, getColor, getPos);
                 }
                 break;
@@ -638,13 +645,13 @@ public class ChessManager : MonoBehaviour
                 if (getColor == GameColor.White)
                 {
                     Piece piece = Instantiate(whiteBishopPrefab, whitePiecesParent).GetComponent<Piece>();
-                    piece.pieceType = PieceType.Bishop;
+                    piece.pieceType = PieceType.B;
                     SetPiece(piece, getColor, getPos);
                 }
                 else
                 {
                     Piece piece = Instantiate(blackBishopPrefab, blackPiecesParent).GetComponent<Piece>();
-                    piece.pieceType = PieceType.Bishop;
+                    piece.pieceType = PieceType.B;
                     SetPiece(piece, getColor, getPos);
                 }
                 break;
@@ -652,13 +659,13 @@ public class ChessManager : MonoBehaviour
                 if (getColor == GameColor.White)
                 {
                     Piece piece = Instantiate(whiteRookPrefab, whitePiecesParent).GetComponent<Piece>();
-                    piece.pieceType = PieceType.Rook;
+                    piece.pieceType = PieceType.R;
                     SetPiece(piece, getColor, getPos);
                 }
                 else
                 {
                     Piece piece = Instantiate(blackRookPrefab, blackPiecesParent).GetComponent<Piece>();
-                    piece.pieceType = PieceType.Knight;
+                    piece.pieceType = PieceType.N;
                     SetPiece(piece, getColor, getPos);
                 }
                 break;
@@ -666,13 +673,13 @@ public class ChessManager : MonoBehaviour
                 if (getColor == GameColor.White)
                 {
                     Piece piece = Instantiate(whiteQueenPrefab, whitePiecesParent).GetComponent<Piece>();
-                    piece.pieceType = PieceType.Queen;
+                    piece.pieceType = PieceType.Q;
                     SetPiece(piece, getColor, getPos);
                 }
                 else
                 {
                     Piece piece = Instantiate(blackQueenPrefab, blackPiecesParent).GetComponent<Piece>();
-                    piece.pieceType = PieceType.Queen;
+                    piece.pieceType = PieceType.Q;
                     SetPiece(piece, getColor, getPos);
                 }
                 break;

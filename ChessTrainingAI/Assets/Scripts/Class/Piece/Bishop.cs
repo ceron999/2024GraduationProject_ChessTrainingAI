@@ -170,7 +170,7 @@ public class Bishop : Piece
                 movableTIleList.Add(nowTIle);
                 SetIsColorAttack(nowTIle);
 
-                if (nowTIle.locatedPiece.pieceType == PieceType.King)
+                if (nowTIle.locatedPiece.pieceType == PieceType.K)
                 {
                     isBlock = true;
                     SetIsColorBlockAttack(nowTIle);
