@@ -49,9 +49,9 @@ public class Tile : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Debug.Log(tileName.ToString());
+        //Debug.Log(tileName.ToString());
         // 보유한 기물 이동 타일 보여주기
-        if (locatedPiece != null)
+        if (locatedPiece != null && locatedPiece.isMovable)
         {
             locatedPiece.ShowMovableTiles();
         }

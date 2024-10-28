@@ -12,6 +12,8 @@ public abstract class Piece : MonoBehaviour
 {
     #region 기물 정보
     [Header("기물 정보")]
+    public int piecePoint;
+    public bool isMovable;
     public PieceType pieceType;
     public GameColor pieceColor;
     #endregion
@@ -194,7 +196,7 @@ public abstract class Piece : MonoBehaviour
 
     public void SetIsColorAttack(Tile getTile)
     {
-        Debug.Log(this.nowPos + this.gameObject.name + " 의 공격 타일 설정 : " + getTile.tileName);
+        //Debug.Log(this.nowPos + this.gameObject.name + " 의 공격 타일 설정 : " + getTile.tileName);
         if (pieceColor == GameColor.White)
         {
             getTile.isWhiteAttack = true;

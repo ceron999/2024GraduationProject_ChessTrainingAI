@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class King : Piece
 {
@@ -98,11 +99,25 @@ public class King : Piece
             if (ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y].locatedPiece != null)
                 break;
             
+            // 사이 타일이 공격받아도 캐슬링 불가
+            if (ChessManager.instance.nowTurnColor == GameColor.Black)
+            {
+                if (ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y].isBlackAttack)
+                    break; 
+            }
+            else if(ChessManager.instance.nowTurnColor == GameColor.White)
+            {
+                if (ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y].isWhiteAttack)
+                    break;
+            }
+
             // 3. 마지막 Rook 처음 움직이는지 확인
             if (i == targetVector.Count - 1)
             {
                 if (nowRooks[1].isFirstMove)
+                {
                     movableTIleList.Add(ChessManager.instance.chessTileList[6, nowPos.y]);
+                }
             }
         }
 
@@ -126,6 +141,18 @@ public class King : Piece
             // 2. 만일 킹과 룩 사이에 기물이 존재하면 캐슬링 불가능하므로 빠져나감
             if (ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y].locatedPiece != null)
                 break;
+
+            // 사이 타일이 공격받아도 캐슬링 불가
+            if (ChessManager.instance.nowTurnColor == GameColor.Black)
+            {
+                if (ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y].isBlackAttack)
+                    break;
+            }
+            else if (ChessManager.instance.nowTurnColor == GameColor.White)
+            {
+                if (ChessManager.instance.chessTileList[targetVector[i].x, targetVector[i].y].isWhiteAttack)
+                    break;
+            }
 
             // 3. 마지막 Rook 처음 움직이는지 확인
             if (i == targetVector.Count - 1)
@@ -156,6 +183,9 @@ public class King : Piece
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[3, 0].locatedPiece = nowRooks[0];
             nowRooks[0].nowPos = new Vector2Int(3, 0);
+
+            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), getTile, true);
+            NotationManager.instance.FixNotation("O-O-O");
             return true;
         }
         else if (getTile.tileName == TIleName.g1)
@@ -172,6 +202,9 @@ public class King : Piece
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[5, 0].locatedPiece = nowRooks[1];
             nowRooks[1].nowPos = new Vector2Int(5, 0);
+
+            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), getTile, true);
+            NotationManager.instance.FixNotation("O-O");
             return true;
         }
         else if (getTile.tileName == TIleName.c8)
@@ -188,6 +221,9 @@ public class King : Piece
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[3, 7].locatedPiece = nowRooks[0];
             nowRooks[0].nowPos = new Vector2Int(3, 7);
+
+            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), getTile, true);
+            NotationManager.instance.FixNotation("O-O-O");
             return true;
         }
         else if (getTile.tileName == TIleName.g8)
@@ -204,6 +240,9 @@ public class King : Piece
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[5, 7].locatedPiece = nowRooks[1];
             nowRooks[1].nowPos = new Vector2Int(5, 7);
+
+            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), getTile, true);
+            NotationManager.instance.FixNotation("O-O");
             return true;
         }
         else return false;

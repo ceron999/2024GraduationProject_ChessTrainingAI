@@ -54,4 +54,14 @@ public class NotationManager : MonoBehaviour
         }
     }
 
+    // 해당 Notation fixText 추가해 변경할 수 있도록 수정
+    public void AddNotation(string fixText)
+    {
+        notationList[notationList.Count - 1].AddNotation(fixText);
+    }
+
+    public void FixNotation(string fixText)
+    {
+        notationList[notationList.Count - 1].FixNotation(fixText);
+    }
 }

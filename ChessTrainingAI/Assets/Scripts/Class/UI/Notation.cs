@@ -51,4 +51,32 @@ public class Notation : MonoBehaviour
             blackNotationText.text = stringBuilder.ToString();
         }
     }
+
+    public void AddNotation(string getText)
+    {
+        if (ChessManager.instance.nowTurnColor == GameColor.White)
+        {
+            whiteNotationBtn.gameObject.SetActive(true);
+            whiteNotationText.text += getText;
+        }
+        else if (ChessManager.instance.nowTurnColor == GameColor.Black)
+        {
+            blackNotationBtn.gameObject.SetActive(true);
+            blackNotationText.text += getText;
+        }
+    }
+
+    public void FixNotation(string getText)
+    {
+        if (ChessManager.instance.nowTurnColor == GameColor.White)
+        {
+            whiteNotationBtn.gameObject.SetActive(true);
+            whiteNotationText.text = getText;
+        }
+        else if (ChessManager.instance.nowTurnColor == GameColor.Black)
+        {
+            blackNotationBtn.gameObject.SetActive(true);
+            blackNotationText.text = getText;
+        }
+    }
 }
