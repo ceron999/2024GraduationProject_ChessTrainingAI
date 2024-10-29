@@ -286,8 +286,8 @@ public class ChessManager : MonoBehaviour
             piecePrefab2.pieceType = PieceType.B;
             piecePrefab1.pieceColor = GameColor.Black;
             piecePrefab2.pieceColor = GameColor.Black;
-            piecePrefab1.piecePoint = -3;
-            piecePrefab2.piecePoint = -3;
+            piecePrefab1.piecePoint = -3.5f;
+            piecePrefab2.piecePoint = -3.5f;
 
             chessTileList[2, 7].locatedPiece = piecePrefab1;
             chessTileList[5, 7].locatedPiece = piecePrefab2;
@@ -306,8 +306,8 @@ public class ChessManager : MonoBehaviour
             piecePrefab2.pieceType = PieceType.B;
             piecePrefab1.pieceColor = GameColor.White;
             piecePrefab2.pieceColor = GameColor.White;
-            piecePrefab1.piecePoint = 3;
-            piecePrefab2.piecePoint = 3;
+            piecePrefab1.piecePoint = 3.5f;
+            piecePrefab2.piecePoint = 3.5f;
 
             chessTileList[2, 0].locatedPiece = piecePrefab1;
             chessTileList[5, 0].locatedPiece = piecePrefab2;
@@ -457,10 +457,12 @@ public class ChessManager : MonoBehaviour
     }
     public void StartAITurn()
     {
-        Debug.Log("Action");
+        //Debug.Log("Action");
 
         ChessAIManager.Instance.SetState();
         ChessAIManager.Instance.SetAction();
+        ChessAIManager.Instance.UpdateQ_Table();
+        ChessAIManager.Instance.DebugQ_TableNotation();
         //turnEnd?.Invoke();
     }
 
@@ -499,8 +501,7 @@ public class ChessManager : MonoBehaviour
             nowTurn++;
         }
 
-        //if (nowTurnColor != playerColor)
-        //    aiTurn?.Invoke();
+        aiTurn?.Invoke();
     }
 
     void Check()

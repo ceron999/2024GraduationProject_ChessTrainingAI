@@ -12,7 +12,7 @@ public abstract class Piece : MonoBehaviour
 {
     #region 기물 정보
     [Header("기물 정보")]
-    public int piecePoint;
+    public float piecePoint;
     public bool isMovable;
     public PieceType pieceType;
     public GameColor pieceColor;
