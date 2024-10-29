@@ -461,8 +461,7 @@ public class ChessManager : MonoBehaviour
 
         ChessAIManager.Instance.SetState();
         ChessAIManager.Instance.SetAction();
-        ChessAIManager.Instance.UpdateQ_Table();
-        ChessAIManager.Instance.DebugQ_TableNotation();
+        ChessAIManager.Instance.MovePiece();
         //turnEnd?.Invoke();
     }
 
@@ -501,7 +500,8 @@ public class ChessManager : MonoBehaviour
             nowTurn++;
         }
 
-        aiTurn?.Invoke();
+        if(nowTurnColor != playerColor)
+            aiTurn?.Invoke();
     }
 
     void Check()
