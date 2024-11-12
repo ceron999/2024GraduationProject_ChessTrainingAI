@@ -8,4 +8,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Chess Kit/Scenes/Game Scene 3D vs AI.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/StartScene.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/ChessScene.unity
+    guid: 6dab6969f849681498bb655840ad693a
+  - enabled: 1
+    path: Assets/Scenes/ReviewChessScene.unity
+    guid: f87a4399cc2a81f4c82c3abb95c38e80
   m_configObjects: {}

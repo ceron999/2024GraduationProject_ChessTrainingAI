@@ -7,7 +7,7 @@ using System.Text;
 public class JsonManager : MonoBehaviour
 {
 
-    public static void SaveJson(float[,,] saveData)
+    public static void SaveNotationJson()
     {
         string jsonText;
 
@@ -27,7 +27,25 @@ public class JsonManager : MonoBehaviour
         builder.Append(nameString);
         builder.Append(dotJson);
 
-        jsonText = JsonUtility.ToJson(saveData, true);
+        SaveNotation nowData = new SaveNotation();
+
+        List<Notation> getNotaion = new List<Notation>();
+        getNotaion = NotationManager.instance.notationList;
+
+        for (int i = 0; i < getNotaion.Count; i++)
+        {
+            nowData.notaionList.Add(getNotaion[i].nowNotation[0]);
+
+            try
+            {
+                nowData.notaionList.Add(getNotaion[i].nowNotation[1]);
+            }
+            catch
+            {
+                Debug.Log("End Notaion");
+            }
+        }
+        jsonText = JsonUtility.ToJson(nowData, true);
 
         FileStream fileStream = new FileStream(builder.ToString(), FileMode.Create);
         byte[] bytes = Encoding.UTF8.GetBytes(jsonText);

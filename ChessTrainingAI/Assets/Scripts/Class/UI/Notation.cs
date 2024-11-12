@@ -7,6 +7,7 @@ using System.Text;
 
 public class Notation : MonoBehaviour
 {
+    public string[] nowNotation = new string[2];
     public TextMeshProUGUI turnCountText;
     public GameObject whiteNotationBtn;
     public GameObject blackNotationBtn;
@@ -44,11 +45,13 @@ public class Notation : MonoBehaviour
         {
             whiteNotationBtn.gameObject.SetActive(true);
             whiteNotationText.text = stringBuilder.ToString();
+            nowNotation[0] = stringBuilder.ToString();
         }
         else if(ChessManager.instance.nowTurnColor == GameColor.Black)
         {
             blackNotationBtn.gameObject.SetActive(true);
             blackNotationText.text = stringBuilder.ToString();
+            nowNotation[1] = stringBuilder.ToString();
         }
     }
 
@@ -58,11 +61,13 @@ public class Notation : MonoBehaviour
         {
             whiteNotationBtn.gameObject.SetActive(true);
             whiteNotationText.text += getText;
+            nowNotation[0] = whiteNotationText.text;
         }
         else if (ChessManager.instance.nowTurnColor == GameColor.Black)
         {
             blackNotationBtn.gameObject.SetActive(true);
             blackNotationText.text += getText;
+            nowNotation[1] = blackNotationText.text;
         }
     }
 
@@ -72,11 +77,13 @@ public class Notation : MonoBehaviour
         {
             whiteNotationBtn.gameObject.SetActive(true);
             whiteNotationText.text = getText;
+            nowNotation[0] = whiteNotationText.text;
         }
         else if (ChessManager.instance.nowTurnColor == GameColor.Black)
         {
             blackNotationBtn.gameObject.SetActive(true);
             blackNotationText.text = getText;
+            nowNotation[1] = blackNotationText.text;
         }
     }
 }

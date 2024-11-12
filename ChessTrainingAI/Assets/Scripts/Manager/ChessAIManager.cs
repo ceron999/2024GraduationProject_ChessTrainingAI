@@ -56,7 +56,9 @@ public class ChessAIManager : MonoBehaviour
         Vector2Int startPos = new Vector2Int(startPosIndex % 8, startPosIndex / 8);
         Vector2Int endPos = new Vector2Int(endPosIndex % 8, endPosIndex / 8);
         //Debug.Log(moveNum + "\n" + startPos + "\n" + ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece.pieceType);
+        
         // 기물 이동
+
         ChessManager.instance.nowPiece = ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece;
         ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece.
             Move(ChessManager.instance.chessTileList[endPos.x, endPos.y]);
@@ -117,10 +119,22 @@ public class ChessAIManager : MonoBehaviour
         {
             // 아무것도 이득이 없는 행위라는 것이므로 그냥 아무거나 행동으로 설정
         }
-
-        int selectedNum = UnityEngine.Random.Range(0, getQIndex.Count);
-
+        // 랜덤 값 설정
+        int selectedNum = UnityEngine.Random.Range(0, getQIndex.Count - 1);
+        
         moveNum = getQIndex[selectedNum];
+        getQIndex.RemoveAt(selectedNum);
+
+        // moveNum을 통한 랜덤 값 확인
+        int startPosIndex = moveNum / 64;
+        int endPosIndex = moveNum % 64;
+
+        Vector2Int startPos = new Vector2Int(startPosIndex % 8, startPosIndex / 8);
+        Vector2Int endPos = new Vector2Int(endPosIndex % 8, endPosIndex / 8);
+
+        if (ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece == null)
+            SearchBestMove(getQIndex);
+
     }
 
     #region Table 초기화 및 재설정
@@ -187,7 +201,7 @@ public class ChessAIManager : MonoBehaviour
                 if(getTiles[x, y].locatedPiece != null)
                     state[x,y] = getTiles[x,y].locatedPiece.piecePoint;
             }
-        DebugState();
+        //DebugState();
     }
 
     public void SetAction()
@@ -217,7 +231,7 @@ public class ChessAIManager : MonoBehaviour
             }
         }
 
-        DebugAction();
+        //DebugAction();
     }
     #endregion
 

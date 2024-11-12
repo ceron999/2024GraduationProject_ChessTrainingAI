@@ -1,18 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class StartSceneManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public Button playingComputerBtn;
+    public Button reviewChessBtn;
+    public Button exitBtn;
+
+    private void Awake()
     {
-        
+        playingComputerBtn.onClick.AddListener(PlayComputer);
+        reviewChessBtn.onClick.AddListener(ReviewGame);
+        exitBtn.onClick.AddListener(Exit);
     }
 
-    // Update is called once per frame
-    void Update()
+    void PlayComputer()
     {
-        
+        SceneManager.LoadScene("ChessScene");
     }
+
+    void ReviewGame()
+    {
+        SceneManager.LoadScene("ReviewChessScene");
+    }
+
+
+    void Exit()
+    {
+        Application.Quit();
+    }
+
 }
