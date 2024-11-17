@@ -31,6 +31,7 @@ public class ChessAIManager : MonoBehaviour
 
     #region Tables
     float[,,,] Q_Table = new float[60,6,64,64];     // [turn, 기물 타입, 시작 타일, 도착 타일] 
+    
     float[,] state = new float[8, 8];               // [ col, row]
     float[,] action = new float[64, 64];            // [시작 타일, 도착 타일]
     #endregion
@@ -62,9 +63,11 @@ public class ChessAIManager : MonoBehaviour
         ChessManager.instance.nowPiece = ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece;
         ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece.
             Move(ChessManager.instance.chessTileList[endPos.x, endPos.y]);
+    }
 
-        // 턴 종료
-        //ChessManager.instance.turnEnd?.Invoke();
+    public void AvoidCheck()
+    {
+        // 체크 피하기 함수
     }
 
 
@@ -80,7 +83,7 @@ public class ChessAIManager : MonoBehaviour
             // 기물이 이동할 수 없음 or 흰색 기물이면 pass
             if (action[i / 64, i % 64] >= 0)
                 continue;
-
+            
             // 1. 현재 i번째 리워드 값을 구한다.
             int targetTileNum = i % 64;      // 현재 기물 도착 지점의 값
             
@@ -97,15 +100,13 @@ public class ChessAIManager : MonoBehaviour
             {
                 currentQIndex.Clear();
                 currentQIndex.Add(i);
-
+                
                 currentQReward = nowReward;
             }
             else if(nowReward == currentQReward)
             {
                 currentQIndex.Add(i);
             }
-
-            //Debug.Log(i + "번째\n nowReward : " + Reward(targetTileNum) + "\n maxQReward : " + maxQReward + "\n total : " + nowReward);
         }
         SearchBestMove(currentQIndex);
 
@@ -195,10 +196,12 @@ public class ChessAIManager : MonoBehaviour
     public void SetState()
     {
         Tile[,] getTiles = ChessManager.instance.chessTileList;
+        
         for (int x = 0;x < 8; x++)
             for(int y = 0;y < 8; y++)
             {
-                if(getTiles[x, y].locatedPiece != null)
+                state[x, y] = 0;
+                if (getTiles[x, y].locatedPiece != null)
                     state[x,y] = getTiles[x,y].locatedPiece.piecePoint;
             }
         //DebugState();
@@ -209,6 +212,12 @@ public class ChessAIManager : MonoBehaviour
         Tile[,] getTiles = ChessManager.instance.chessTileList;
 
         List<Piece> nowPieces = new List<Piece>();
+
+        for (int x = 0; x < 64; x++)
+            for (int y = 0; y < 64; y++)
+            {
+                action[x, y] = 0;
+            }
 
         // 기물 정리
         for (int x = 0; x < 8; x++)
@@ -231,7 +240,7 @@ public class ChessAIManager : MonoBehaviour
             }
         }
 
-        //DebugAction();
+        DebugAction();
     }
     #endregion
 
@@ -346,7 +355,7 @@ public class ChessAIManager : MonoBehaviour
     {
         Debug.Log("상태");
         StringBuilder arr = new StringBuilder();
-        for (int y = 0; y < 8; y++)
+        for (int y = 7; y > 0; y--)
         {
             arr.Append("[");
             for (int z = 0; z < 8; z++)
@@ -403,6 +412,17 @@ public class ChessAIManager : MonoBehaviour
             }
         }
         Debug.Log(arr.ToString());
+    }
+
+    void DebugPositions(int i)
+    {
+        int startPosNum = i / 64;
+        int endPosNum = i % 64;
+
+        Vector2 startPos = new Vector2(startPosNum % 8, startPosNum / 8);
+        Vector2 endPos = new Vector2(endPosNum % 8, endPosNum / 8);
+
+        Debug.Log("현재 시작 지점 : " + startPos + "\n도착 지점 : " + endPos);
     }
     #endregion
 

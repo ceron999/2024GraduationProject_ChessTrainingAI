@@ -457,12 +457,13 @@ public class ChessManager : MonoBehaviour
     }
     public void StartAITurn()
     {
-        //Debug.Log("Action");
-
         ChessAIManager.Instance.SetState();
         ChessAIManager.Instance.SetAction();
-        ChessAIManager.Instance.MovePiece();
-        //turnEnd?.Invoke();
+
+        if (!isCheck)
+            ChessAIManager.Instance.MovePiece();
+        else
+            ChessAIManager.Instance.AvoidCheck();
     }
 
     //턴 종료
@@ -525,6 +526,9 @@ public class ChessManager : MonoBehaviour
             Debug.Log("체크 아님");
             NotationManager.instance.AddNotation("+");
             nowTurnColor = (nowTurnColor == GameColor.White) ? GameColor.Black : GameColor.White;
+
+            if (nowTurnColor != playerColor)
+                aiTurn?.Invoke();
         }
     }
 
