@@ -9,6 +9,7 @@ public class TestPiece
     [Header("기물 정보")]
     public PieceType pieceType;
     public GameColor pieceColor;
+    public float piecePoint;
     #endregion
 
     [Header("기물 이동 정보 리스트")]
@@ -26,9 +27,10 @@ public class TestPiece
     }
 
     public virtual void SetAttackPieceList()
-    {
+    { attackPieceList.Clear(); }
 
-    }
+    public virtual void SetMovableTileList()
+    { movableTIleList.Clear(); }
 
     // Piece -> testPiece로 정보를 변환하는 함수
     public void SetPieceInfo(Piece getPiece)
@@ -85,5 +87,28 @@ public class TestPiece
     }
     #endregion
 
+    public void SetIsColorAttack(TestTile getTile)
+    {
+        //Debug.Log(this.nowPos + this.gameObject.name + " 의 공격 타일 설정 : " + getTile.tileName);
+        if (pieceColor == GameColor.White)
+        {
+            getTile.isWhiteAttack = true;
+        }
+        else if (pieceColor == GameColor.Black)
+        {
+            getTile.isBlackAttack = true;
+        }
+    }
 
+    public void SetIsColorBlockAttack(TestTile getTile)
+    {
+        if (pieceColor == GameColor.White)
+        {
+            getTile.isWhiteBlockAttack = true;
+        }
+        else if (pieceColor == GameColor.Black)
+        {
+            getTile.isBlackBlockAttack = true;
+        }
+    }
 }

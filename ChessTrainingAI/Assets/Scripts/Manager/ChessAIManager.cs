@@ -26,15 +26,11 @@ public class ChessAIManager : MonoBehaviour
 
     #region Q 러닝 관련 데이터
     const float GAMMA = 0.5f;
-    int nowStateCount = 0;
     #endregion
 
     #region Tables
-    float[,,,] Q_Table = new float[60,6,64,64];     // [turn, 기물 타입, 시작 타일, 도착 타일] 
-    
     public State state = new State();
-    List<State> nextStateList = new List<State>();
-    List<Action> nextActionList = new List<Action>();
+    public List<State> nextStateList = new List<State>();
     #endregion
 
     int moveNum = -1;
@@ -46,7 +42,8 @@ public class ChessAIManager : MonoBehaviour
     
      public void MovePiece()
     {
-        Q_Learning();
+        //Q_Learning();
+        CalculateReward();
 
         // moveNum이 음수면 문제가 생긴것으로 강제 return
         if (moveNum < 0)
@@ -57,10 +54,8 @@ public class ChessAIManager : MonoBehaviour
 
         Vector2Int startPos = new Vector2Int(startPosIndex % 8, startPosIndex / 8);
         Vector2Int endPos = new Vector2Int(endPosIndex % 8, endPosIndex / 8);
-        //Debug.Log(moveNum + "\n" + startPos + "\n" + ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece.pieceType);
         
         // 기물 이동
-
         ChessManager.instance.nowPiece = ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece;
         ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece.
             Move(ChessManager.instance.chessTileList[endPos.x, endPos.y]);
@@ -74,6 +69,9 @@ public class ChessAIManager : MonoBehaviour
         List<int> currentQIndex = new List<int>();
         float currentQReward = 0;
 
+        // 다음 State 리스트를 미리 설정한다. 
+        SetNextStateList();
+
         for (int i = 0; i < state.nowAction.nowActionArr.Length; i++)
         {
             // 기물이 이동할 수 없음 or 흰색 기물이면 pass
@@ -86,11 +84,10 @@ public class ChessAIManager : MonoBehaviour
             float nowReward = Reward(targetTileNum);
 
             // 2. 다음 turn에서 가장 효율적인 이동을 고른다.
-            SetNextState();
-            float maxQReward = MaxAction();
+            State minRewardState = MinAction();
 
             // 3. 현재 보상값 = R(state, reward) + gamma * Max(Q(next state, all actions))
-            nowReward += GAMMA * maxQReward;
+            nowReward += GAMMA * minRewardState.nowAction.minActionReward;
 
             // 4. 현재 보상이 이전 보상보다 크다면 추가
             if (nowReward > currentQReward)
@@ -108,6 +105,40 @@ public class ChessAIManager : MonoBehaviour
         SearchBestMove(currentQIndex);
 
         // Q_Table에 업데이트
+    }
+
+    void CalculateReward()
+    {
+        // 다음 State 리스트를 미리 설정한다. 
+        SetNextStateList();
+
+        // 1. 최대 reward를 가질 State 설정
+        List<State> maxRewardState = new List<State>();
+        maxRewardState.Add(nextStateList[0]);
+        float maxReward = Reward(nextStateList[0].lastAction.y) + nextStateList[0].nowAction.minActionReward;
+
+        // 2. next state를 순회하며 최대 reward를 가지는 State를 찾음
+        for (int i = 1; i < nextStateList.Count; i++) 
+        {
+            float nowReward = Reward(nextStateList[i].lastAction.y);
+
+            float nextMinReward = nextStateList[i].nowAction.minActionReward;
+
+            nowReward += GAMMA * nextMinReward;
+
+            if (nowReward > maxReward)
+            {
+                maxRewardState.Clear();
+                maxRewardState.Add(nextStateList[i]);
+                Debug.Log("maxReward : " + maxReward);
+                maxReward = nowReward;
+            }
+            else
+            {
+                maxRewardState.Add(nextStateList[i]);
+            }
+        }
+        SearchBestMove(maxRewardState);
     }
 
     // 선택된 Q 인덱스 중에서 랜덤으로 뽑기
@@ -135,6 +166,34 @@ public class ChessAIManager : MonoBehaviour
 
     }
 
+    void SearchBestMove(List<State> getStateList)
+    {
+        if (getStateList.Count == 0)
+        {
+            // 다음 state가 아무것도 없다는 뜻으로 제거
+            Debug.Log("SearchBestMove에서 최소 reward를 갖는 state가 0개임");
+            return;
+        }
+
+        // 랜덤으로 State 설정
+        int selectedNum = UnityEngine.Random.Range(0, getStateList.Count - 1);
+
+        State selectedState = getStateList[selectedNum];
+        getStateList.RemoveAt(selectedNum);
+
+        // 선택된 State의 lastAction대로 행동
+        int startPosIndex = selectedState.lastAction.x;
+        int endPosIndex = selectedState.lastAction.y;
+
+        Vector2Int startPos = new Vector2Int(startPosIndex % 8, startPosIndex / 8);
+        Vector2Int endPos = new Vector2Int(endPosIndex % 8, endPosIndex / 8);
+
+        if (ChessManager.instance.chessTileList[startPos.x, startPos.y].locatedPiece == null)
+            SearchBestMove(getStateList);
+
+        moveNum = startPosIndex * 64 + endPosIndex;
+    }
+
     #region Table 초기화 및 재설정
     public void SetState()
     {
@@ -154,6 +213,14 @@ public class ChessAIManager : MonoBehaviour
 
         Debug.Log("현재 시작 지점 : " + startPos + "\n도착 지점 : " + endPos);
     }
+
+    void DebugStartPosNEndPos(Vector2Int getPositions)
+    {
+        Vector2 startPos = new Vector2(getPositions.x % 8, getPositions.x / 8);
+        Vector2 endPos = new Vector2(getPositions.y % 8, getPositions.y / 8);
+
+        Debug.Log("현재 시작 지점 : " + startPos + "\n도착 지점 : " + endPos);
+    }
     #endregion
 
     #region 계산 함수
@@ -169,39 +236,71 @@ public class ChessAIManager : MonoBehaviour
     /// <summary>
     /// 다음 turn에서 가장 좋은 수를 찾습니다.
     /// </summary>
-    float MaxAction()
+    State MinAction()
     {
         // 다음 턴 최대 reward를 가져오는 알고리즘
-        // 1. 다음 state 리스트를 생성한다.
-        // 2. 해당 state에서 모든 action을 가져온다.
-        // 3. 해당 state별 최대 reward를 가져온다.
-        // 4. state 리스트에서 최대 reward를 return한다
-        return 0;
+        // 1. 해당 state별 최소 reward를 가져온다.
+        List<State> smallestStateList = new List<State> ();
+        smallestStateList.Add(nextStateList[0]);
+
+        for (int i = 0; i < nextStateList.Count; i++)
+        {
+            if (nextStateList[i].minRewardActionList.Count == 0)
+                continue;
+
+            State currentState = nextStateList[i];
+
+            // 가장 작은 Reward를 가지는 State가 1개 이상일 경우를 위해 리스트로 받음
+            if (nextStateList[i].nowAction.minActionReward < smallestStateList[0].nowAction.minActionReward)
+            {
+                smallestStateList.Clear();
+                smallestStateList.Add(currentState);
+            }
+            else if(nextStateList[i].nowAction.minActionReward == smallestStateList[0].nowAction.minActionReward)
+                smallestStateList.Add(currentState);
+
+        }
+
+        // 최소 reward를 가지는 State가 1개보다 크다면 랜덤으로 하나 선택
+        if (smallestStateList.Count > 1)
+        {
+            int num = UnityEngine.Random.Range(0, smallestStateList.Count);
+            return smallestStateList[num];
+        }
+
+        // 4. state 리스트에서 최대 reward를 가지는 state를 return한다
+        return smallestStateList[0];
     } 
     
     // 다음 수를 예측할 떄 먼저 state 리스트를 설정할 수 있도록 구현
-    void SetNextState()
+    void SetNextStateList()
     {
+        // 만일 가능한 행동이 없다면 return
         if(state.nowAction.availableActionList.Count == 0)
         {
             Debug.Log("가능한 액션이 존재하지 않음");
             return;
         }
-        TestManager.Instance.ConvertState2TestTileBoard(state);
-        //State nextTempStage = new State();
 
-        //// 1. 현재 State에서 가능한 action을 가져온다.
-        //for (int i = 0; i < state.nowAction.availableActionList.Count; i++)
-        //{
-        //    int startPosNum = state.nowAction.availableActionList[i].x; 
-        //    int endPosNum = state.nowAction.availableActionList[i].y;
-        //    Vector2Int startPos = new Vector2Int(startPosNum % 8, startPosNum / 8);
-        //    Vector2Int endPos = new Vector2Int(endPosNum % 8, endPosNum / 8);
+        // 1. 초기화
+        nextStateList.Clear();
 
-        //    nextTempStage.UpdateState(startPos, endPos);
+        // 2. 다음 State를 생성
+        for (int i = 0; i < state.nowAction.availableActionList.Count; i++)
+        {
+            // 만일 백의 action이라면 패스
+            if (state.IsPieceColorWhite(state.nowAction.availableActionList[i].x))
+                continue;
 
-        //    nextStateList.Add(nextTempStage);
-        //}
+            // 1. 현재 State를 복사
+            State nextTempState = new State();
+            nextTempState.DeepCopyState(state);
+
+            // action대로 state 변환
+            nextTempState.UpdateState(state.nowAction.availableActionList[i]);
+            nextTempState.lastAction = state.nowAction.availableActionList[i];
+            nextStateList.Add(nextTempState);
+        }
     }
 
     #endregion

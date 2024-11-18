@@ -37,6 +37,7 @@ public class TestManager : MonoBehaviour
     // 테스트 보드에 타일 생성
     void SetTestBoard()
     {
+        bool colorChange = true;
         for (int col = 0; col < 8; col++)
             for (int row = 0; row < 8; row++)
             {
@@ -47,8 +48,18 @@ public class TestManager : MonoBehaviour
                 // 타일 이름 설정
                 testTileList[row, col].tileName = (TIleName)(row + col * 8);
 
-                tile.GetComponent<SpriteRenderer>().color = new Color(0,0,0,0);
+                // 타일 색을 변경
+                if (colorChange)
+                    testTileList[row, col].GetComponent<SpriteRenderer>().color = new Color(115 / 255f, 144 / 255f, 83 / 255f);
+                else
+                    testTileList[row, col].GetComponent<SpriteRenderer>().color = new Color(235 / 255f, 236 / 255f, 208 / 255f);
+
+                // 다음 Eow의 0번 Col의 색깔이 이전 Row의 7번 Col과 동일하므로 변화하지 않도록 고정하는 부분
+                if (row != 7)
+                    colorChange = !colorChange;
             }
+
+        
     }
     
     // 테스트 보드에 현재 위치한 기물 정보 삽입
@@ -200,28 +211,38 @@ public class TestManager : MonoBehaviour
         }
         return false;
     }
-
-    public void ConvertState2TestTileBoard(State getState)
+    
+    // 현재 Board에서 이동 가능한 행동 계산
+    public void EvaluateMovableTiles()
     {
-        // 0. 확인 전 보드 초기화
-        ClearBoardInfo();
-
-        // 1. 보드판을 State에 맞게 재설정
-        for(int i = 0; i< 8;  i++)
-            for(int j = 0; j < 8; j++)
+        TestPiece whiteKing = new TestKing();
+        TestPiece blackKing = new TestKing();
+        for (int i = 0; i < testBlackPieces.Count; i++)
+        {
+            if (testBlackPieces[i].pieceType == PieceType.K)
             {
-                if (getState.nowState[i, j] == 0)
-                {
-                    //여기엔 기물이 없으므로 넘어간다.
-                    continue;
-                }
-
-                // tile,testPiece에 기물 데이터를 삽입한다.
-                Vector2Int nowPos = new Vector2Int(i, j);
-                testTileList[i, j].locatedPiece = ChangeStateNum2Piece(getState.nowState[i, j], nowPos);
+                blackKing = testBlackPieces[i];
+                continue;
             }
 
+            testBlackPieces[i].SetMovableTileList();
+        }
+
+        for (int i = 0;i < testWhitePieces.Count; i++)
+        {
+            if (testWhitePieces[i].pieceType == PieceType.K)
+            {
+                whiteKing = testWhitePieces[i];
+                continue;
+            }
+
+            testWhitePieces[i].SetMovableTileList();
+        }
+
+        whiteKing.SetMovableTileList();
+        blackKing.SetMovableTileList();
     }
+
     #endregion
 
     #region 변환 함수
@@ -276,7 +297,7 @@ public class TestManager : MonoBehaviour
     /// State.nowState[x,y]의 값을 확인하고 해당 값에 맞는 기물로 설정
     /// </summary>
     /// <param name="nowStateNum"> State.nowState[x,y]의 값</param>
-    TestPiece ChangeStateNum2Piece(float nowStateNum, Vector2Int getNowPos)
+    TestPiece ConvertStateNum2Piece(float nowStateNum, Vector2Int getNowPos)
     {
         TestPiece piece = new TestPiece();
         switch (Mathf.Abs(nowStateNum))
@@ -287,24 +308,36 @@ public class TestManager : MonoBehaviour
                 piece.pieceType = PieceType.P;
                 piece.nowPos = getNowPos;
                 if (nowStateNum > 0)
+                {
                     piece.pieceColor = GameColor.White;
-                
+                    piece.piecePoint = 1;
+                }
+
                 // 흑
                 else
+                {
                     piece.pieceColor = GameColor.Black;
-                
-                return piece;
+                    piece.piecePoint = -1;
+                }
+
+        return piece;
             case 3:
                 // 백
                 piece = new TestKnight();
                 piece.pieceType = PieceType.N;
                 piece.nowPos = getNowPos;
                 if (nowStateNum > 0)
-                    piece.pieceColor = GameColor.White;
+                { 
+                    piece.pieceColor = GameColor.White; 
+                    piece.piecePoint = 3;
+                }
 
                 // 흑
                 else
+                { 
                     piece.pieceColor = GameColor.Black;
+                    piece.piecePoint = -3;
+                }
 
                 return piece;
             case 3.5f:
@@ -313,11 +346,17 @@ public class TestManager : MonoBehaviour
                 piece.pieceType = PieceType.B;
                 piece.nowPos = getNowPos;
                 if (nowStateNum > 0)
+                {
                     piece.pieceColor = GameColor.White;
+                    piece.piecePoint = 3.5f;
+                }
 
                 // 흑
                 else
-                    piece.pieceColor = GameColor.Black;
+                {
+                    piece.pieceColor = GameColor.Black; 
+                    piece.piecePoint = -3.5f;
+                }
 
                 return piece;
             case 5:
@@ -326,40 +365,86 @@ public class TestManager : MonoBehaviour
                 piece.pieceType = PieceType.R;
                 piece.nowPos = getNowPos;
                 if (nowStateNum > 0)
-                    piece.pieceColor = GameColor.White;
+                { 
+                    piece.pieceColor = GameColor.White; 
+                    piece.piecePoint = 5;
+                }
 
                 // 흑
                 else
+                { 
                     piece.pieceColor = GameColor.Black;
+                    piece.piecePoint = -5;
+                }
 
                 return piece;
             case 8:
                 // 백
                 piece = new TestQueen();
+                piece.pieceType = PieceType.Q;
                 piece.nowPos = getNowPos;
                 if (nowStateNum > 0)
+                {   
                     piece.pieceColor = GameColor.White;
+                    piece.piecePoint = 8;
+                }
 
                 // 흑
                 else
+                { 
                     piece.pieceColor = GameColor.Black;
-
+                    piece.piecePoint = -8;
+                }
                 return piece;
             case 10000:
                 // 백
                 piece = new TestKing();
+                piece.pieceType = PieceType.K;
                 piece.nowPos = getNowPos;
                 if (nowStateNum > 0)
+                {
                     piece.pieceColor = GameColor.White;
-
+                    piece.piecePoint = 10000;
+                }
                 // 흑
                 else
+                {
                     piece.pieceColor = GameColor.Black;
-
+                    piece.piecePoint = -10000;
+                }
                 return piece;
             default:
                 return null;
         }
+    }
+
+    public void ConvertState2TestTileBoard(State getState)
+    {
+        // 0. 확인 전 보드 초기화
+        testBlackPieces.Clear();
+        testWhitePieces.Clear();
+        ClearBoardInfo();
+
+        // 1. 보드판을 State에 맞게 재설정
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+            {
+                if (getState.nowState[i, j] == 0)
+                {
+                    //여기엔 기물이 없으므로 넘어간다.
+                    continue;
+                }
+
+                // tile,testPiece에 기물 데이터를 삽입한다.
+                Vector2Int nowPos = new Vector2Int(i, j);
+                testTileList[i, j].locatedPiece = ConvertStateNum2Piece(getState.nowState[i, j], nowPos);
+
+                if (testTileList[i, j].locatedPiece.pieceColor == GameColor.White)
+                    testWhitePieces.Add(testTileList[i, j].locatedPiece);
+                else if (testTileList[i, j].locatedPiece.pieceColor == GameColor.Black)
+                    testBlackPieces.Add(testTileList[i, j].locatedPiece);
+            }
+
     }
     #endregion
 }

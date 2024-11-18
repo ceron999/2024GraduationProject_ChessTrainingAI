@@ -34,6 +34,7 @@ public class TestTile : MonoBehaviour
     // 매 턴마다 정보 초기화할때 쓸 함수
     public void ClearTileInfo()
     {
+        locatedPiece = null;
         isWhiteAttack = false;
         isWhiteBlockAttack = false;
         isBlackAttack = false;

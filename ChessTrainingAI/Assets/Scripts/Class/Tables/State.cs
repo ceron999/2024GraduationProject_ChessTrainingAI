@@ -6,8 +6,13 @@ using System.Text;
 [System.Serializable]
 public class State
 {
+    public Vector2Int lastAction;       // 해당 state가 되기 바로 전 action을 저장
+
     public float[,] nowState = new float[8,8];
     public Action nowAction = new Action();
+
+    public List<Vector2Int> maxRewardActionList = new List<Vector2Int>();
+    public List<Vector2Int> minRewardActionList = new List<Vector2Int>();
 
     public State()
     {
@@ -35,6 +40,8 @@ public class State
             }
 
         nowAction.SetNowAction();
+        maxRewardActionList = nowAction.GetMaxAction(this);
+        minRewardActionList = nowAction.GetMinAction(this);
     }
 
     // 파라미터로 받은 state를 복사한다.
@@ -44,22 +51,26 @@ public class State
             for (int j = 0; j < 8; j++)
                 nowState[i, j] = getState.nowState[i, j];
 
-        nowAction = getState.nowAction;
+        nowAction.DeepCopyAction(getState.nowAction);
     }
 
     // action을 진행하였을 때 시작 타일과 도착 타일의 점수를 변경한다.
-    public void UpdateState(Vector2Int actionStartPos, Vector2Int actionEndPos)
+    public void UpdateState(Vector2Int getAction)
     {
+        Vector2Int actionStartPos = new Vector2Int(getAction.x % 8, getAction.x / 8);
+        Vector2Int actionEndPos = new Vector2Int(getAction.y % 8, getAction.y / 8); ;
+
         nowState[actionEndPos.x, actionEndPos.y] = nowState[actionStartPos.x, actionStartPos.y];
         nowState[actionStartPos.x, actionStartPos.y] = 0;
 
         nowAction.UpdateAction(this);
+        maxRewardActionList = nowAction.GetMaxAction(this);
+        minRewardActionList = nowAction.GetMinAction(this);
     }
 
     // 현재 state를 출력한다
     public void DebugState()
     {
-        Debug.Log("상태");
         StringBuilder arr = new StringBuilder();
         for (int y = 7; y > 0; y--)
         {
@@ -79,5 +90,15 @@ public class State
         }
 
         Debug.Log(arr.ToString());
+    }
+
+    public bool IsPieceColorWhite(int getStartPosNum)
+    {
+        Vector2Int startPos = new Vector2Int(getStartPosNum % 8, getStartPosNum / 8);
+
+        if (nowState[startPos.x, startPos.y] > 0)
+            return true;
+        else
+            return false;
     }
 }
