@@ -458,12 +458,7 @@ public class ChessManager : MonoBehaviour
     public void StartAITurn()
     {
         ChessAIManager.Instance.SetState();
-        ChessAIManager.Instance.SetAction();
-
-        if (!isCheck)
-            ChessAIManager.Instance.MovePiece();
-        else
-            ChessAIManager.Instance.AvoidCheck();
+        ChessAIManager.Instance.MovePiece();
     }
 
     //ео а╬╥А

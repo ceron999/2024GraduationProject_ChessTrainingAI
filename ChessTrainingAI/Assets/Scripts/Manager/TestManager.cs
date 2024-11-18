@@ -179,7 +179,7 @@ public class TestManager : MonoBehaviour
             testTileList[savePostion.x, savePostion.y].locatedPiece = null;
     }
 
-    #region 체크 확인용 함수
+    #region 체크 및 이동 확인용 함수
     // 턴을 종료하기 전 체크인지 확인하는 함수
     public bool EvaluateIsCheck(List<TestPiece> getList)
     {
@@ -199,6 +199,28 @@ public class TestManager : MonoBehaviour
                 return true;
         }
         return false;
+    }
+
+    public void ConvertState2TestTileBoard(State getState)
+    {
+        // 0. 확인 전 보드 초기화
+        ClearBoardInfo();
+
+        // 1. 보드판을 State에 맞게 재설정
+        for(int i = 0; i< 8;  i++)
+            for(int j = 0; j < 8; j++)
+            {
+                if (getState.nowState[i, j] == 0)
+                {
+                    //여기엔 기물이 없으므로 넘어간다.
+                    continue;
+                }
+
+                // tile,testPiece에 기물 데이터를 삽입한다.
+                Vector2Int nowPos = new Vector2Int(i, j);
+                testTileList[i, j].locatedPiece = ChangeStateNum2Piece(getState.nowState[i, j], nowPos);
+            }
+
     }
     #endregion
 
@@ -248,6 +270,96 @@ public class TestManager : MonoBehaviour
         temp.nowPos = getPiece.nowPos;
 
         return temp;
+    }
+
+    /// <summary>
+    /// State.nowState[x,y]의 값을 확인하고 해당 값에 맞는 기물로 설정
+    /// </summary>
+    /// <param name="nowStateNum"> State.nowState[x,y]의 값</param>
+    TestPiece ChangeStateNum2Piece(float nowStateNum, Vector2Int getNowPos)
+    {
+        TestPiece piece = new TestPiece();
+        switch (Mathf.Abs(nowStateNum))
+        {
+            case 1:
+                // 백
+                piece = new TestPawn();
+                piece.pieceType = PieceType.P;
+                piece.nowPos = getNowPos;
+                if (nowStateNum > 0)
+                    piece.pieceColor = GameColor.White;
+                
+                // 흑
+                else
+                    piece.pieceColor = GameColor.Black;
+                
+                return piece;
+            case 3:
+                // 백
+                piece = new TestKnight();
+                piece.pieceType = PieceType.N;
+                piece.nowPos = getNowPos;
+                if (nowStateNum > 0)
+                    piece.pieceColor = GameColor.White;
+
+                // 흑
+                else
+                    piece.pieceColor = GameColor.Black;
+
+                return piece;
+            case 3.5f:
+                // 백
+                piece = new TestBishop();
+                piece.pieceType = PieceType.B;
+                piece.nowPos = getNowPos;
+                if (nowStateNum > 0)
+                    piece.pieceColor = GameColor.White;
+
+                // 흑
+                else
+                    piece.pieceColor = GameColor.Black;
+
+                return piece;
+            case 5:
+                // 백
+                piece = new TestRook();
+                piece.pieceType = PieceType.R;
+                piece.nowPos = getNowPos;
+                if (nowStateNum > 0)
+                    piece.pieceColor = GameColor.White;
+
+                // 흑
+                else
+                    piece.pieceColor = GameColor.Black;
+
+                return piece;
+            case 8:
+                // 백
+                piece = new TestQueen();
+                piece.nowPos = getNowPos;
+                if (nowStateNum > 0)
+                    piece.pieceColor = GameColor.White;
+
+                // 흑
+                else
+                    piece.pieceColor = GameColor.Black;
+
+                return piece;
+            case 10000:
+                // 백
+                piece = new TestKing();
+                piece.nowPos = getNowPos;
+                if (nowStateNum > 0)
+                    piece.pieceColor = GameColor.White;
+
+                // 흑
+                else
+                    piece.pieceColor = GameColor.Black;
+
+                return piece;
+            default:
+                return null;
+        }
     }
     #endregion
 }
