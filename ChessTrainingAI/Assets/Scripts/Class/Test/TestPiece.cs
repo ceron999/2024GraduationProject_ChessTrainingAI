@@ -27,7 +27,9 @@ public class TestPiece
     }
 
     public virtual void SetAttackPieceList()
-    { attackPieceList.Clear(); }
+    { 
+        //attackPieceList.Clear(); 
+    }
 
     public virtual void SetMovableTileList()
     { movableTIleList.Clear(); }
@@ -81,7 +83,9 @@ public class TestPiece
         for (int i = 0; i < attackPieceList.Count; i++)
         {
             if (attackPieceList[i].pieceType == PieceType.K)
+            {
                 return true;
+            }
         }
         return false;
     }

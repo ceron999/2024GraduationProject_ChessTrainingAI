@@ -65,6 +65,7 @@ public class TestManager : MonoBehaviour
     // 테스트 보드에 현재 위치한 기물 정보 삽입
     public void SetTestBoardInfo()
     {
+        ClearBoardInfo();
         // 현재 기물의 현재 위치를 가져와서 옮김
         for (int col = 0; col < 8; col++)
             for (int row = 0; row < 8; row++)
@@ -101,7 +102,7 @@ public class TestManager : MonoBehaviour
             {
                 // 3. 현재 이동 기물 저장
                 nowPiece = testBlackPieces[i];
-                Debug.Log("현재 기물 : " + nowPiece.pieceColor + " " + nowPiece.pieceType + " (" + nowPiece.nowPos + ")");
+                Debug.Log("현재 기물 : " + nowPiece.pieceColor + " " + nowPiece.pieceType + nowPiece.nowPos);
 
                 for (int count = 0; count < nowPiece.movableTIleList.Count; count++)
                 {
@@ -173,6 +174,8 @@ public class TestManager : MonoBehaviour
     // 테스트 보드 초기화
     void ClearBoardInfo()
     {
+        testBlackPieces.Clear();
+        testWhitePieces.Clear();
         for (int col = 0; col < 8; col++)
             for (int row = 0; row < 8; row++)
             {
@@ -197,7 +200,7 @@ public class TestManager : MonoBehaviour
         Vector2Int piecePos = new Vector2Int();
         for (int i = 0; i < getList.Count; i++)
             getList[i].SetAttackPieceList();
-
+        
         for (int i=0; i<getList.Count; i++)
         {
             // 1. 이동에 의해 현재 기물이 죽었다면 넘어가기

@@ -23,7 +23,7 @@ public class TestBishop : TestPiece
         direction.Add(new Vector2Int(+1, -1));
 
 
-       while(isSearch)
+       while(nowDir < direction.Count)
         {
             targetVector = nowPos + direction[nowDir] * count;
 
@@ -44,9 +44,11 @@ public class TestBishop : TestPiece
                 else
                     break;
             }
-
-            isSearch = true;
-            InsertAttackPieces(targetVector);
+            else
+            {
+                InsertAttackPieces(targetVector);
+                count++;
+            }
         }
     }
 

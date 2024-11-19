@@ -163,7 +163,7 @@ public class ChessManager : MonoBehaviour
 
         SetPawn(GameColor.Black);
         SetKnight(GameColor.Black);
-        SetBishop(GameColor.Black);
+        //SetBishop(GameColor.Black);
         SetQueen(GameColor.Black);
         SetKing(GameColor.Black);
         SetRook(GameColor.Black);
@@ -518,7 +518,7 @@ public class ChessManager : MonoBehaviour
         else
         {
             // 체크 아니므로 상대 턴 시작
-            Debug.Log("체크 아님");
+            Debug.Log("체크메니트 아님");
             NotationManager.instance.AddNotation("+");
             nowTurnColor = (nowTurnColor == GameColor.White) ? GameColor.Black : GameColor.White;
 
@@ -584,17 +584,16 @@ public class ChessManager : MonoBehaviour
             for (int i = 0; i < whitePiecesParent.childCount; i++)
             {
                 whitePiecesParent.GetChild(i).GetComponent<Piece>().isMovable = true;
-                blackPiecesParent.GetChild(i).GetComponent<Piece>().isMovable = true;
             }
         }
         else
         {
             playerColor = GameColor.Black;
-            for (int i = 0; i < blackPiecesParent.childCount; i++)
-            {
-                whitePiecesParent.GetChild(i).GetComponent<Piece>().isMovable = true;
-                blackPiecesParent.GetChild(i).GetComponent<Piece>().isMovable = true;
-            }
+            //for (int i = 0; i < blackPiecesParent.childCount; i++)
+            //{
+            //    whitePiecesParent.GetChild(i).GetComponent<Piece>().isMovable = true;
+            //    blackPiecesParent.GetChild(i).GetComponent<Piece>().isMovable = true;
+            //}
         }
 
         if (playerColor == GameColor.White)

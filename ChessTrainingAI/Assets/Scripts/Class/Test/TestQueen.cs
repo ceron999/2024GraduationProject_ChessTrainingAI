@@ -27,7 +27,7 @@ public class TestQueen : TestPiece
         direction.Add(new Vector2Int(0, +1));
 
 
-        while (isSearch)
+        while (nowDir < direction.Count)
         {
             targetVector = nowPos + direction[nowDir] * count;
 
@@ -39,7 +39,7 @@ public class TestQueen : TestPiece
                     count = 0;
                     nowDir++;
 
-                    if (nowDir > 1000)
+                    if (nowDir > 10)
                     {
                         Debug.Log("¿À·ù!");
                         break;
@@ -48,9 +48,11 @@ public class TestQueen : TestPiece
                 else
                     break;
             }
-
-            isSearch = true;
-            InsertAttackPieces(targetVector);
+            else
+            {
+                InsertAttackPieces(targetVector);
+                count++;
+            }
         }
     }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 public class ChessAIManager : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class ChessAIManager : MonoBehaviour
     #endregion
 
     #region Q 러닝 관련 데이터
-    const float GAMMA = 0.5f;
+    const float GAMMA = 0.9f;
     #endregion
 
     #region Tables
@@ -125,15 +126,13 @@ public class ChessAIManager : MonoBehaviour
             float nextMinReward = nextStateList[i].nowAction.minActionReward;
 
             nowReward += GAMMA * nextMinReward;
-
             if (nowReward > maxReward)
             {
                 maxRewardState.Clear();
                 maxRewardState.Add(nextStateList[i]);
-                Debug.Log("maxReward : " + maxReward);
                 maxReward = nowReward;
             }
-            else
+            else if(nowReward == maxReward)
             {
                 maxRewardState.Add(nextStateList[i]);
             }
@@ -168,6 +167,12 @@ public class ChessAIManager : MonoBehaviour
 
     void SearchBestMove(List<State> getStateList)
     {
+        //Debug.Log("받아온 리스트");
+        //for (int i = 0; i < getStateList.Count; i++)
+        //{
+        //    Debug.Log(Reward(getStateList[i].lastAction.y) + getStateList[i].nowAction.minActionReward);
+        //    getStateList[i].DebugState();
+        //}
         if (getStateList.Count == 0)
         {
             // 다음 state가 아무것도 없다는 뜻으로 제거
@@ -180,7 +185,7 @@ public class ChessAIManager : MonoBehaviour
 
         State selectedState = getStateList[selectedNum];
         getStateList.RemoveAt(selectedNum);
-
+       
         // 선택된 State의 lastAction대로 행동
         int startPosIndex = selectedState.lastAction.x;
         int endPosIndex = selectedState.lastAction.y;

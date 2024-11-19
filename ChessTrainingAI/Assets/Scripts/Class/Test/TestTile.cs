@@ -27,6 +27,7 @@ public class TestTile : MonoBehaviour
 
         if (getTile.locatedPiece != null)
         {
+            locatedPiece = new TestPiece();
             locatedPiece.SetPieceInfo(getTile.locatedPiece);
         }
     }

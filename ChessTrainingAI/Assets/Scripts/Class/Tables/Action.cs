@@ -155,6 +155,7 @@ public class Action
             if (getState.nowState[currentIndex.y % 8, currentIndex.y / 8] 
                         < getState.nowState[smallestIndexList[0].y % 8, smallestIndexList[0].y / 8])
             {
+                //Debug.Log(currentIndex + "최소값 확인중: " + getState.nowState[currentIndex.y % 8, currentIndex.y / 8]);
                 minActionReward = getState.nowState[currentIndex.y % 8, currentIndex.y / 8];
                 smallestIndexList.Clear();
                 smallestIndexList.Add(availableActionList[i]);

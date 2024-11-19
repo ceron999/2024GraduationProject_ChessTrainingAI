@@ -72,7 +72,7 @@ public class State
     public void DebugState()
     {
         StringBuilder arr = new StringBuilder();
-        for (int y = 7; y > 0; y--)
+        for (int y = 7; y >= 0; y--)
         {
             arr.Append("[");
             for (int z = 0; z < 8; z++)
