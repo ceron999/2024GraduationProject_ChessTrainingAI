@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NotationManager : MonoBehaviour
 {
@@ -37,6 +38,8 @@ public class NotationManager : MonoBehaviour
         if(GameManager.Instance.isReview)
         {
             reviewNotaion = JsonManager.LoadNotationJsonFile(GameManager.Instance.reviewNotationName);
+            ReviewManager.Instance.nowReviewNotation = reviewNotaion;
+            SetNotations();
         }
     }
 
@@ -79,5 +82,34 @@ public class NotationManager : MonoBehaviour
     public void FixNotation(string fixText)
     {
         notationList[notationList.Count - 1].FixNotation(fixText);
+    }
+
+    void SetNotations()
+    {
+        for(int i =0; i < reviewNotaion.list.Count; i++)
+        {
+            if(i%2 ==0)
+            {
+                Notation newNotation = Instantiate(notationPrefab, notationParent).GetComponent<Notation>();
+                nowNotation = newNotation;
+                nowNotation.gameObject.SetActive(true);
+                notationList.Add(nowNotation);
+
+                nowNotation.turnCountText.text = ((int)i / 2).ToString();
+                nowNotation.whiteNotation.notation = reviewNotaion.list[i].notation;
+                nowNotation.whiteNotation.startPos = reviewNotaion.list[i].startPos;
+                nowNotation.whiteNotation.endPos = reviewNotaion.list[i].endPos;
+
+                nowNotation.UpdateNotationPrefab();
+            }
+            else
+            {
+                nowNotation.blackNotation.notation = reviewNotaion.list[i].notation;
+                nowNotation.blackNotation.startPos = reviewNotaion.list[i].startPos;
+                nowNotation.blackNotation.endPos = reviewNotaion.list[i].endPos;
+
+                nowNotation.UpdateNotationPrefab();
+            }
+        }
     }
 }

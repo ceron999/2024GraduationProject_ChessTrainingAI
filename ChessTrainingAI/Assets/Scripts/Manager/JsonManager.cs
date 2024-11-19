@@ -83,7 +83,7 @@ public class JsonManager : MonoBehaviour
 
         DirectoryInfo directoryInfo = new DirectoryInfo(builder.ToString());
         FileInfo[] fileInfos = directoryInfo.GetFiles(name + ".json");
-        Debug.Log(fileInfos[0].FullName);
+        //Debug.Log(fileInfos[0].FullName);
         string jsonData = File.ReadAllText(fileInfos[0].FullName);
         gameData = JsonUtility.FromJson<JsonNotationWrapper>(jsonData);
 

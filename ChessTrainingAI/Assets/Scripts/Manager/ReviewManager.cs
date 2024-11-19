@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ReviewManager : MonoBehaviour
 {
@@ -43,6 +46,31 @@ public class ReviewManager : MonoBehaviour
     [SerializeField]
     GameObject blackKingPrefab;
     #endregion 기물 프리팹
+
+    [Header("UI")]
+    // 리뷰씬에서 사용하는 기보 움직임 버튼
+    public Button prevBtn;
+    public Button nextBtn;
+
+    public JsonNotationWrapper nowReviewNotation;
+    int nowState = 0;
+
+    public static ReviewManager Instance;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+
+        prevBtn.onClick.AddListener(SetPrevState);
+        nextBtn.onClick.AddListener(SetNextState);
+    }
 
     private void Start()
     {
@@ -107,11 +135,17 @@ public class ReviewManager : MonoBehaviour
             {
                 piecePrefab = Instantiate(blackPawnPrefab, blackPiecesParent).GetComponent<Piece>();
                 piecePrefab.transform.position = new Vector2(i, 6);
+                piecePrefab.nowPos = new Vector2Int(i, 6);
+
+                chessTileList[i, 6].locatedPiece = piecePrefab;
             }
             else if (getColor == GameColor.White)
             {
                 piecePrefab = Instantiate(whitePawnPrefab, whitePiecesParent).GetComponent<Piece>();
                 piecePrefab.transform.position = new Vector2(i, 1);
+                piecePrefab.nowPos = new Vector2Int(i, 1);
+
+                chessTileList[i, 1].locatedPiece = piecePrefab;
             }
             else
                 Debug.Log("Pawn 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -132,6 +166,9 @@ public class ReviewManager : MonoBehaviour
             piecePrefab1.transform.position = new Vector2(1, 7);
             piecePrefab2.transform.position = new Vector2(6, 7);
 
+            piecePrefab1.nowPos = new Vector2Int(1, 7);
+            piecePrefab2.nowPos = new Vector2Int(6, 7);
+
 
             chessTileList[1, 7].locatedPiece = piecePrefab1;
             chessTileList[6, 7].locatedPiece = piecePrefab2;
@@ -143,6 +180,12 @@ public class ReviewManager : MonoBehaviour
 
             piecePrefab1.transform.position = new Vector2(1, 0);
             piecePrefab2.transform.position = new Vector2(6, 0);
+
+            piecePrefab1.nowPos = new Vector2Int(1, 0);
+            piecePrefab2.nowPos = new Vector2Int(6, 0);
+
+            chessTileList[1, 0].locatedPiece = piecePrefab1;
+            chessTileList[6, 0].locatedPiece = piecePrefab2;
         }
         else
             Debug.Log("Knight 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -162,6 +205,12 @@ public class ReviewManager : MonoBehaviour
 
             piecePrefab1.transform.position = new Vector2(2, 7);
             piecePrefab2.transform.position = new Vector2(5, 7);
+
+            piecePrefab1.nowPos = new Vector2Int(2, 7);
+            piecePrefab2.nowPos = new Vector2Int(5, 7);
+
+            chessTileList[2, 7].locatedPiece = piecePrefab1;
+            chessTileList[5, 7].locatedPiece = piecePrefab2;
         }
         else if (getColor == GameColor.White)
         {
@@ -170,6 +219,12 @@ public class ReviewManager : MonoBehaviour
 
             piecePrefab1.transform.position = new Vector2(2, 0);
             piecePrefab2.transform.position = new Vector2(5, 0);
+
+            piecePrefab1.nowPos = new Vector2Int(2, 0);
+            piecePrefab2.nowPos = new Vector2Int(5, 0);
+
+            chessTileList[2, 0].locatedPiece = piecePrefab1;
+            chessTileList[5, 0].locatedPiece = piecePrefab2;
         }
         else
             Debug.Log("Bishop 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -189,6 +244,16 @@ public class ReviewManager : MonoBehaviour
 
             piecePrefab1.transform.position = new Vector2(0, 7);
             piecePrefab2.transform.position = new Vector2(7, 7);
+
+            piecePrefab1.nowPos = new Vector2Int(0, 7);
+            piecePrefab2.nowPos = new Vector2Int(7, 7);
+
+            King nowKing = GameObject.Find("BlackKing(Clone)").GetComponent<King>();
+            nowKing.nowRooks[0] = piecePrefab1.GetComponent<Rook>();
+            nowKing.nowRooks[1] = piecePrefab2.GetComponent<Rook>();
+
+            chessTileList[0, 7].locatedPiece = piecePrefab1;
+            chessTileList[7, 7].locatedPiece = piecePrefab2;
         }
         else if (getColor == GameColor.White)
         {
@@ -197,6 +262,16 @@ public class ReviewManager : MonoBehaviour
 
             piecePrefab1.transform.position = new Vector2(0, 0);
             piecePrefab2.transform.position = new Vector2(7, 0);
+
+            piecePrefab1.nowPos = new Vector2Int(0, 0);
+            piecePrefab2.nowPos = new Vector2Int(7, 0);
+
+            King nowKing = GameObject.Find("WhiteKing(Clone)").GetComponent<King>();
+            nowKing.nowRooks[0] = piecePrefab1.GetComponent<Rook>();
+            nowKing.nowRooks[1] = piecePrefab2.GetComponent<Rook>();
+
+            chessTileList[0, 0].locatedPiece = piecePrefab1;
+            chessTileList[7, 0].locatedPiece = piecePrefab2;
         }
         else
             Debug.Log("Rook 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -212,11 +287,17 @@ public class ReviewManager : MonoBehaviour
         {
             piecePrefab1 = Instantiate(blackQueenPrefab, blackPiecesParent).GetComponent<Piece>();
             piecePrefab1.transform.position = new Vector2(3, 7);
+            piecePrefab1.nowPos = new Vector2Int(3, 7);
+
+            chessTileList[3, 7].locatedPiece = piecePrefab1;
         }
         else if (getColor == GameColor.White)
         {
             piecePrefab1 = Instantiate(whiteQueenPrefab, whitePiecesParent).GetComponent<Piece>();
             piecePrefab1.transform.position = new Vector2(3, 0);
+            piecePrefab1.nowPos = new Vector2Int(3, 0);
+
+            chessTileList[3, 0].locatedPiece = piecePrefab1;
         }
         else
             Debug.Log("Queen 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
@@ -232,16 +313,63 @@ public class ReviewManager : MonoBehaviour
             piecePrefab1 = Instantiate(blackKingPrefab, blackPiecesParent).GetComponent<Piece>();
 
             piecePrefab1.transform.position = new Vector2(4, 7);
+            piecePrefab1.nowPos = new Vector2Int(4, 7);
+
+            chessTileList[4, 7].locatedPiece = piecePrefab1;
         }
         else if (getColor == GameColor.White)
         {
             piecePrefab1 = Instantiate(whiteKingPrefab, whitePiecesParent).GetComponent<Piece>();
 
             piecePrefab1.transform.position = new Vector2(4, 0);
+            piecePrefab1.nowPos = new Vector2Int(4, 0);
+
+            chessTileList[4, 0].locatedPiece = piecePrefab1;
         }
         else
             Debug.Log("King 만드는 중에 GetColor 매개변수가 Null로 표시되었습니다.");
 
     }
+    #endregion
+
+    #region 기보 순서 따라가기 함수
+    void SetPrevState()
+    {
+        if(nowState == 0)
+        {
+            return;
+        }
+
+
+    }
+
+    public void SetNextState()
+    {
+        Debug.Log(11);
+        if(nowState >= nowReviewNotation.list.Count)
+        {
+            return;
+        }
+
+        MovePiece(nowReviewNotation.list[nowState]);
+        nowState++;
+    }
+
+    void MovePiece(NotationInfo getInfo)
+    {
+        TIleName startTileName = (TIleName)Enum.Parse(typeof(TIleName), getInfo.startPos.ToString());
+        TIleName endTileName = (TIleName)Enum.Parse(typeof(TIleName), getInfo.endPos.ToString());
+
+        Vector2Int startPos = new Vector2Int((int)startTileName % 8, (int)startTileName / 8);
+        Vector2Int endPos = new Vector2Int((int)endTileName % 8, (int)endTileName / 8);
+        Debug.Log(startTileName + " " + endTileName);
+        Debug.Log(startPos + " " + endPos);
+        if(chessTileList[endPos.x, endPos.y].locatedPiece != null)
+            Destroy(chessTileList[endPos.x, endPos.y].locatedPiece.gameObject);
+        chessTileList[endPos.x, endPos.y].locatedPiece = chessTileList[startPos.x, startPos.y].locatedPiece;
+        chessTileList[startPos.x, startPos.y].locatedPiece.transform.position = new Vector3(endPos.x, endPos.y, 0);
+        chessTileList[startPos.x, startPos.y].locatedPiece = null;
+    }
+
     #endregion
 }

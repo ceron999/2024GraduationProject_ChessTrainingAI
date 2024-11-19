@@ -102,4 +102,15 @@ public class Notation : MonoBehaviour
             blackNotation.SetNotation(blackNotationText.text);
         }
     }
+
+    // 리뷰씬에서 받아온 기보 정보로 업데이트시키고 싶을 때 사용할 함수
+    public void UpdateNotationPrefab()
+    {
+        turnCountText.gameObject.SetActive(true);
+        blackNotationBtn.gameObject.SetActive(true);
+        whiteNotationBtn.gameObject.SetActive(true);
+
+        whiteNotationText.text = whiteNotation.notation;
+        blackNotationText.text = blackNotation.notation;
+    }
 }
