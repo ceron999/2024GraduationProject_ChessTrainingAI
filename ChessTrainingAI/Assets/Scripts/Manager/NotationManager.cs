@@ -21,6 +21,8 @@ public class NotationManager : MonoBehaviour
     }
     #endregion
 
+    public JsonNotationWrapper reviewNotaion;
+
     [Header("UI")]
     public GameObject notationUI;
     public GameObject notationPrefab;
@@ -30,13 +32,21 @@ public class NotationManager : MonoBehaviour
 
     Notation nowNotation;
 
+    private void Start()
+    {
+        if(GameManager.Instance.isReview)
+        {
+            reviewNotaion = JsonManager.LoadNotationJsonFile(GameManager.Instance.reviewNotationName);
+        }
+    }
+
     /// <summary>
     /// 기보 출력
     /// </summary>
     /// <param name="getPiece"> 기물의 종류 받아오기 전용</param>
-    /// <param name="getTile"> 타일의 이름 받아오기 전용</param>
+    /// <param name="endTile"> 타일의 이름 받아오기 전용</param>
     /// <param name="isTake"> 적 기물을 처치하였는가 확인용</param>
-    public void WriteNotation(Piece getPiece, Tile getTile, bool isTake)
+    public void WriteNotation(Piece getPiece, Tile startTile, Tile endTile, bool isTake)
     {
         if (nowNotation == null)
         {
@@ -46,11 +56,17 @@ public class NotationManager : MonoBehaviour
         }
 
         nowNotation.gameObject.SetActive(true);
-        nowNotation.SetNotation(getPiece.pieceType, getTile.tileName, isTake);
+        nowNotation.SetNotation(getPiece.pieceType, endTile.tileName, isTake);
+        
 
         if(ChessManager.instance.nowTurnColor == GameColor.Black)
         {
+            nowNotation.blackNotation.SetNotationPositions(startTile.tileName, endTile.tileName);
             nowNotation = null;
+        }
+        else if(ChessManager.instance.nowTurnColor == GameColor.White)
+        {
+            nowNotation.whiteNotation.SetNotationPositions(startTile.tileName, endTile.tileName);
         }
     }
 

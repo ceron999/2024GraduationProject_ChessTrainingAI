@@ -3,21 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Text;
+using System;
+
+[Serializable]
+public class JsonNotationWrapper
+{
+    public List<NotationInfo> list;
+
+    public JsonNotationWrapper()
+    {
+        list = new List<NotationInfo>();
+    }
+}
 
 public class JsonManager : MonoBehaviour
 {
 
     public static void SaveNotationJson()
     {
-        string jsonText;
-
         string savePath = Application.dataPath;
-        string appender = "/userData/";
-        string nameString = "SaveData";
+        string folderName = "/userData/";
+        string nameString = "Game";
         string dotJson = ".json";
 
+        //1. 폴더 개수 세기
+        DirectoryInfo di = new DirectoryInfo(savePath + folderName);
+        FileInfo[] fiArr = di.GetFiles("*.json");
+        string gameCountString = fiArr.Length.ToString();
+
+        // 2. 폴더 생성 및 
         StringBuilder builder = new StringBuilder(savePath);
-        builder.Append(appender);
+        builder.Append(folderName);
         if (!Directory.Exists(builder.ToString()))
         {
             //디렉토리가 없는경우 만들어준다
@@ -25,45 +41,51 @@ public class JsonManager : MonoBehaviour
 
         }
         builder.Append(nameString);
+        builder.Append(gameCountString);
         builder.Append(dotJson);
 
-        SaveNotation nowData = new SaveNotation();
+        JsonNotationWrapper nowData = new JsonNotationWrapper();
 
         List<Notation> getNotaion = new List<Notation>();
         getNotaion = NotationManager.instance.notationList;
 
         for (int i = 0; i < getNotaion.Count; i++)
         {
-            nowData.notaionList.Add(getNotaion[i].nowNotation[0]);
+            nowData.list.Add(getNotaion[i].whiteNotation);
 
             try
             {
-                nowData.notaionList.Add(getNotaion[i].nowNotation[1]);
+                nowData.list.Add(getNotaion[i].blackNotation);
             }
             catch
             {
                 Debug.Log("End Notaion");
             }
         }
-        jsonText = JsonUtility.ToJson(nowData, true);
 
+        string jsonText;
+        jsonText = JsonUtility.ToJson(nowData, true);
+        
         FileStream fileStream = new FileStream(builder.ToString(), FileMode.Create);
         byte[] bytes = Encoding.UTF8.GetBytes(jsonText);
         fileStream.Write(bytes, 0, bytes.Length);
         fileStream.Close();
     }
 
-    public static T ResourceDataLoad<T>(string name)
+    public static JsonNotationWrapper LoadNotationJsonFile(string name)
     {
-        T gameData;
-        string directory = "JsonData/";
+        JsonNotationWrapper gameData;
+        string savePath = Application.dataPath;
+        string folderName = "/userData/";
 
-        string appender1 = name;
-        StringBuilder builder = new StringBuilder(directory);
-        builder.Append(appender1);
-        TextAsset jsonString = Resources.Load<TextAsset>(builder.ToString());
-        
-        gameData = JsonUtility.FromJson<T>(jsonString.ToString());
+        StringBuilder builder = new StringBuilder(savePath);
+        builder.Append(folderName);
+
+        DirectoryInfo directoryInfo = new DirectoryInfo(builder.ToString());
+        FileInfo[] fileInfos = directoryInfo.GetFiles(name + ".json");
+        Debug.Log(fileInfos[0].FullName);
+        string jsonData = File.ReadAllText(fileInfos[0].FullName);
+        gameData = JsonUtility.FromJson<JsonNotationWrapper>(jsonData);
 
         return gameData;
     }

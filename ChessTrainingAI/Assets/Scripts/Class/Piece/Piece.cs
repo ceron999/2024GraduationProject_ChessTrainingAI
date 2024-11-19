@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -67,11 +68,11 @@ public abstract class Piece : MonoBehaviour
         if (selectTIle.locatedPiece != null)
         {
             Destroy(selectTIle.locatedPiece.gameObject);
-            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), selectTIle, true);
+            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), nowTIle, selectTIle, true);
         }
         else
         {
-            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), selectTIle, false);
+            NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), nowTIle, selectTIle, false);
         }
 
         // 2-3. 타일 정보 재설정
@@ -219,4 +220,10 @@ public abstract class Piece : MonoBehaviour
         }
     }
     #endregion
+
+    public TIleName GetTileName()
+    {
+        int num = nowPos.x + nowPos.y * 8;
+        return ((TIleName)Enum.Parse(typeof(TIleName), num.ToString()));
+    }
 }

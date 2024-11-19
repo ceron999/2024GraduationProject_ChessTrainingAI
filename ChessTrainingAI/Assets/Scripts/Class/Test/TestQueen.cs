@@ -5,7 +5,6 @@ using static Unity.Collections.AllocatorManager;
 
 public class TestQueen : TestPiece
 {
-    bool isSearch = true;
     int nowDir = 0;
     int count = 0;
 
@@ -86,8 +85,6 @@ public class TestQueen : TestPiece
                     count = 0;
                     nowDir++;
                 }
-                else
-                    isSearch = false;
             }
         }
 

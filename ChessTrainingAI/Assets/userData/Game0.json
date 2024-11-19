@@ -1,0 +1,24 @@
+{
+    "list": [
+        {
+            "notation": "e4",
+            "startPos": "e2",
+            "endPos": "e4"
+        },
+        {
+            "notation": "Nh6",
+            "startPos": "g8",
+            "endPos": "h6"
+        },
+        {
+            "notation": "f3",
+            "startPos": "f2",
+            "endPos": "f3"
+        },
+        {
+            "notation": "Qc8",
+            "startPos": "d8",
+            "endPos": "c8"
+        }
+    ]
+}

@@ -1,0 +1,44 @@
+{
+    "list": [
+        {
+            "notation": "e4",
+            "startPos": "e2",
+            "endPos": "e4"
+        },
+        {
+            "notation": "f6",
+            "startPos": "f7",
+            "endPos": "f6"
+        },
+        {
+            "notation": "f3",
+            "startPos": "f2",
+            "endPos": "f3"
+        },
+        {
+            "notation": "h5",
+            "startPos": "h7",
+            "endPos": "h5"
+        },
+        {
+            "notation": "g4",
+            "startPos": "g2",
+            "endPos": "g4"
+        },
+        {
+            "notation": "xg4",
+            "startPos": "h5",
+            "endPos": "g4"
+        },
+        {
+            "notation": "xg4",
+            "startPos": "f3",
+            "endPos": "g4"
+        },
+        {
+            "notation": "Rh7",
+            "startPos": "h8",
+            "endPos": "h7"
+        }
+    ]
+}

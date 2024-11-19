@@ -10,6 +10,8 @@ public class StartSceneManager : MonoBehaviour
     public Button reviewChessBtn;
     public Button exitBtn;
 
+    public GameObject inventory;
+
     private void Awake()
     {
         playingComputerBtn.onClick.AddListener(PlayComputer);
@@ -24,7 +26,7 @@ public class StartSceneManager : MonoBehaviour
 
     void ReviewGame()
     {
-        SceneManager.LoadScene("ReviewChessScene");
+        inventory.SetActive(true);
     }
 
 
