@@ -183,6 +183,7 @@ public class King : Piece
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[3, 0].locatedPiece = nowRooks[0];
             nowRooks[0].nowPos = new Vector2Int(3, 0);
+            this.nowPos = new Vector2Int(2, 0);
 
             NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), nowTIle, getTile, true);
             NotationManager.instance.FixNotation("O-O-O");
@@ -202,6 +203,7 @@ public class King : Piece
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[5, 0].locatedPiece = nowRooks[1];
             nowRooks[1].nowPos = new Vector2Int(5, 0);
+            this.nowPos = new Vector2Int(6, 0);
 
             NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), nowTIle, getTile, true);
             NotationManager.instance.FixNotation("O-O");
@@ -221,6 +223,7 @@ public class King : Piece
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[3, 7].locatedPiece = nowRooks[0];
             nowRooks[0].nowPos = new Vector2Int(3, 7);
+            this.nowPos = new Vector2Int(2, 7);
 
             NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), nowTIle, getTile, true);
             NotationManager.instance.FixNotation("O-O-O");
@@ -240,6 +243,7 @@ public class King : Piece
             getTile.locatedPiece = this;
             ChessManager.instance.chessTileList[5, 7].locatedPiece = nowRooks[1];
             nowRooks[1].nowPos = new Vector2Int(5, 7);
+            this.nowPos = new Vector2Int(6, 7);
 
             NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), nowTIle, getTile, true);
             NotationManager.instance.FixNotation("O-O");
