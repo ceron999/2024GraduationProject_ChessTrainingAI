@@ -531,17 +531,11 @@ public class ChessManager : MonoBehaviour
         // 1. 킹이 움직일 수 있으면 체크메이트가 불가능하므로 패스
         if (nowTurnColor == GameColor.White)
         {
-            if (blackKing == null)
-                return true;
-
             if (blackKing.movableTIleList.Count > 0)
                 return false;
         }
         else if(nowTurnColor == GameColor.Black)
         {
-            if (whiteKing == null)
-                return true;
-
             if (whiteKing.movableTIleList.Count > 0)
                 return false;
         }
@@ -577,6 +571,14 @@ public class ChessManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void CatchKing()
+    {
+        // 현재 색깔 승리
+        NotationManager.instance.AddNotation("#");
+        gameEndUI.SetActive(true);
+        gameEndText.text = nowTurnColor + " Win!";
     }
 
     //게임을 진행하기 전 플레이어의 색을 미리 지정합니다.

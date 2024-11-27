@@ -2651,6 +2651,7 @@ MonoBehaviour:
   blackRookPrefab: {fileID: 1292930708057710506, guid: a07ff5f55456bea4e9df44a240a77dc1, type: 3}
   blackQueenPrefab: {fileID: 8701405948550738680, guid: d41dd2f2d819087479f19130950025fd, type: 3}
   blackKingPrefab: {fileID: 1680797941461329744, guid: 7858b42dbd6546a4eab7236e4b69656b, type: 3}
+  exitBtn: {fileID: 635444658}
   prevBtn: {fileID: 1240187344}
   nextBtn: {fileID: 889260993}
   nowReviewNotation:

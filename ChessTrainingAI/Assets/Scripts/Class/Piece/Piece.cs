@@ -67,6 +67,13 @@ public abstract class Piece : MonoBehaviour
         // 2-2. 해당 타일에 적 piece가 존재할 경우 해당 기물 파괴
         if (selectTIle.locatedPiece != null)
         {
+            if(selectTIle.locatedPiece.pieceType == PieceType.K)
+            {
+                Destroy(selectTIle.locatedPiece.gameObject);
+                NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), nowTIle, selectTIle, true);
+                ChessManager.instance.CatchKing();
+                return;
+            }
             Destroy(selectTIle.locatedPiece.gameObject);
             NotationManager.instance.WriteNotation(this.GetComponent<Piece>(), nowTIle, selectTIle, true);
         }
