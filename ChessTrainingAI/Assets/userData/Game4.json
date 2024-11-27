@@ -1,0 +1,234 @@
+{
+    "list": [
+        {
+            "notation": "e4",
+            "startPos": "e2",
+            "endPos": "e4"
+        },
+        {
+            "notation": "g5",
+            "startPos": "g7",
+            "endPos": "g5"
+        },
+        {
+            "notation": "Nf3",
+            "startPos": "g1",
+            "endPos": "f3"
+        },
+        {
+            "notation": "g4",
+            "startPos": "g5",
+            "endPos": "g4"
+        },
+        {
+            "notation": "Nh4",
+            "startPos": "f3",
+            "endPos": "h4"
+        },
+        {
+            "notation": "c5",
+            "startPos": "c7",
+            "endPos": "c5"
+        },
+        {
+            "notation": "f3",
+            "startPos": "f2",
+            "endPos": "f3"
+        },
+        {
+            "notation": "xf3",
+            "startPos": "g4",
+            "endPos": "f3"
+        },
+        {
+            "notation": "xf3",
+            "startPos": "g2",
+            "endPos": "f3"
+        },
+        {
+            "notation": "Nf6",
+            "startPos": "g8",
+            "endPos": "f6"
+        },
+        {
+            "notation": "Bh3",
+            "startPos": "f1",
+            "endPos": "h3"
+        },
+        {
+            "notation": "d6",
+            "startPos": "d7",
+            "endPos": "d6"
+        },
+        {
+            "notation": "Nc3",
+            "startPos": "b1",
+            "endPos": "c3"
+        },
+        {
+            "notation": "a5",
+            "startPos": "a7",
+            "endPos": "a5"
+        },
+        {
+            "notation": "Nb5",
+            "startPos": "c3",
+            "endPos": "b5"
+        },
+        {
+            "notation": "h6",
+            "startPos": "h7",
+            "endPos": "h6"
+        },
+        {
+            "notation": "c3",
+            "startPos": "c2",
+            "endPos": "c3"
+        },
+        {
+            "notation": "Ra6",
+            "startPos": "a8",
+            "endPos": "a6"
+        },
+        {
+            "notation": "d4",
+            "startPos": "d2",
+            "endPos": "d4"
+        },
+        {
+            "notation": "xd4",
+            "startPos": "c5",
+            "endPos": "d4"
+        },
+        {
+            "notation": "xd4",
+            "startPos": "c3",
+            "endPos": "d4"
+        },
+        {
+            "notation": "Nh5",
+            "startPos": "f6",
+            "endPos": "h5"
+        },
+        {
+            "notation": "e5",
+            "startPos": "e4",
+            "endPos": "e5"
+        },
+        {
+            "notation": "xe5",
+            "startPos": "d6",
+            "endPos": "e5"
+        },
+        {
+            "notation": "Nf5",
+            "startPos": "h4",
+            "endPos": "f5"
+        },
+        {
+            "notation": "xd4",
+            "startPos": "e5",
+            "endPos": "d4"
+        },
+        {
+            "notation": "Nxd4",
+            "startPos": "f5",
+            "endPos": "d4"
+        },
+        {
+            "notation": "Rg8",
+            "startPos": "h8",
+            "endPos": "g8"
+        },
+        {
+            "notation": "Bxh6",
+            "startPos": "c1",
+            "endPos": "h6"
+        },
+        {
+            "notation": "Rxh6",
+            "startPos": "a6",
+            "endPos": "h6"
+        },
+        {
+            "notation": "Bg4",
+            "startPos": "h3",
+            "endPos": "g4"
+        },
+        {
+            "notation": "Nf4",
+            "startPos": "h5",
+            "endPos": "f4"
+        },
+        {
+            "notation": "Qd2",
+            "startPos": "d1",
+            "endPos": "d2"
+        },
+        {
+            "notation": "Rxg4",
+            "startPos": "g8",
+            "endPos": "g4"
+        },
+        {
+            "notation": "xg4",
+            "startPos": "f3",
+            "endPos": "g4"
+        },
+        {
+            "notation": "Nd7",
+            "startPos": "b8",
+            "endPos": "d7"
+        },
+        {
+            "notation": "Qxf4",
+            "startPos": "d2",
+            "endPos": "f4"
+        },
+        {
+            "notation": "Rh8",
+            "startPos": "h6",
+            "endPos": "h8"
+        },
+        {
+            "notation": "Nc7+",
+            "startPos": "b5",
+            "endPos": "c7"
+        },
+        {
+            "notation": "Kf8",
+            "startPos": "e8",
+            "endPos": "f8"
+        },
+        {
+            "notation": "Ne6+",
+            "startPos": "d4",
+            "endPos": "e6"
+        },
+        {
+            "notation": "Kg8",
+            "startPos": "f8",
+            "endPos": "g8"
+        },
+        {
+            "notation": "Nxd8",
+            "startPos": "e6",
+            "endPos": "d8"
+        },
+        {
+            "notation": "Nf8",
+            "startPos": "d7",
+            "endPos": "f8"
+        },
+        {
+            "notation": "Qxf7#",
+            "startPos": "f4",
+            "endPos": "f7"
+        },
+        {
+            "notation": "",
+            "startPos": "",
+            "endPos": ""
+        }
+    ]
+}

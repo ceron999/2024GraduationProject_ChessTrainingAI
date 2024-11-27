@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ReviewManager : MonoBehaviour
@@ -49,6 +50,7 @@ public class ReviewManager : MonoBehaviour
 
     [Header("UI")]
     // 리뷰씬에서 사용하는 기보 움직임 버튼
+    public Button exitBtn;
     public Button prevBtn;
     public Button nextBtn;
 
@@ -68,6 +70,7 @@ public class ReviewManager : MonoBehaviour
             Destroy(this.gameObject);
         }
 
+        exitBtn.onClick.AddListener(ExitReview);
         prevBtn.onClick.AddListener(SetPrevState);
         nextBtn.onClick.AddListener(SetNextState);
     }
@@ -372,4 +375,8 @@ public class ReviewManager : MonoBehaviour
     }
 
     #endregion
+    public void ExitReview()
+    {
+        SceneManager.LoadScene("StartScene");
+    }
 }

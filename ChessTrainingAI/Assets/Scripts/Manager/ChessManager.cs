@@ -531,11 +531,17 @@ public class ChessManager : MonoBehaviour
         // 1. 킹이 움직일 수 있으면 체크메이트가 불가능하므로 패스
         if (nowTurnColor == GameColor.White)
         {
+            if (blackKing == null)
+                return true;
+
             if (blackKing.movableTIleList.Count > 0)
                 return false;
         }
         else if(nowTurnColor == GameColor.Black)
         {
+            if (whiteKing == null)
+                return true;
+
             if (whiteKing.movableTIleList.Count > 0)
                 return false;
         }

@@ -59,6 +59,16 @@ public class TestPawn : TestPiece
         // 흰색 : row가 증가하는 방향 <-> 검은색 : row가 감소하는 방향이 앞임.
         direction = (pieceColor == GameColor.White) ? 1 : -1;
 
+        // isFIrstMove 설정하기
+        if (this.pieceColor == GameColor.White)
+        {
+            if (this.nowPos.y > 1) isFirstMove = false;
+        }
+        else if (this.pieceColor == GameColor.Black)
+        { 
+            if (this.nowPos.y < 6) isFirstMove = false;
+        }
+
         TestTile nowTile = null;
         Vector2Int forward1Pos = new Vector2Int(nowPos.x, nowPos.y + direction);
         Vector2Int forward2Pos = new Vector2Int(nowPos.x, nowPos.y + direction * 2);
