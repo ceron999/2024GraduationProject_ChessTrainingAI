@@ -162,7 +162,7 @@ public class ChessManager : MonoBehaviour
 
         SetPawn(GameColor.Black);
         SetKnight(GameColor.Black);
-        //SetBishop(GameColor.Black);
+        SetBishop(GameColor.Black);
         SetQueen(GameColor.Black);
         SetKing(GameColor.Black);
         SetRook(GameColor.Black);
@@ -171,6 +171,7 @@ public class ChessManager : MonoBehaviour
     void SetPiece(Piece getPiece, GameColor getColor ,Vector2Int getVector)
     {
         getPiece.transform.position = new Vector2(getVector.x, getVector.y);
+        getPiece.isMovable = true;
         getPiece.nowPos = getVector;
         getPiece.pieceColor = getColor;
 
@@ -683,12 +684,14 @@ public class ChessManager : MonoBehaviour
                 {
                     Piece piece = Instantiate(whiteKnightPrefab, whitePiecesParent).GetComponent<Piece>();
                     piece.pieceType = PieceType.N;
+                    piece.piecePoint = 3;
                     SetPiece(piece, getColor, getPos);
                 }
                 else
                 {
                     Piece piece = Instantiate(blackKnightPrefab, blackPiecesParent).GetComponent<Piece>();
                     piece.pieceType = PieceType.N;
+                    piece.piecePoint = -3;
                     SetPiece(piece, getColor, getPos);
                 }
                 break;
@@ -697,12 +700,14 @@ public class ChessManager : MonoBehaviour
                 {
                     Piece piece = Instantiate(whiteBishopPrefab, whitePiecesParent).GetComponent<Piece>();
                     piece.pieceType = PieceType.B;
+                    piece.piecePoint = 3.5f;
                     SetPiece(piece, getColor, getPos);
                 }
                 else
                 {
                     Piece piece = Instantiate(blackBishopPrefab, blackPiecesParent).GetComponent<Piece>();
                     piece.pieceType = PieceType.B;
+                    piece.piecePoint = -3.5f;
                     SetPiece(piece, getColor, getPos);
                 }
                 break;
@@ -711,12 +716,14 @@ public class ChessManager : MonoBehaviour
                 {
                     Piece piece = Instantiate(whiteRookPrefab, whitePiecesParent).GetComponent<Piece>();
                     piece.pieceType = PieceType.R;
+                    piece.piecePoint = 5;
                     SetPiece(piece, getColor, getPos);
                 }
                 else
                 {
                     Piece piece = Instantiate(blackRookPrefab, blackPiecesParent).GetComponent<Piece>();
-                    piece.pieceType = PieceType.N;
+                    piece.pieceType = PieceType.R;
+                    piece.piecePoint = -5;
                     SetPiece(piece, getColor, getPos);
                 }
                 break;
@@ -725,12 +732,14 @@ public class ChessManager : MonoBehaviour
                 {
                     Piece piece = Instantiate(whiteQueenPrefab, whitePiecesParent).GetComponent<Piece>();
                     piece.pieceType = PieceType.Q;
+                    piece.piecePoint = 8;
                     SetPiece(piece, getColor, getPos);
                 }
                 else
                 {
                     Piece piece = Instantiate(blackQueenPrefab, blackPiecesParent).GetComponent<Piece>();
                     piece.pieceType = PieceType.Q;
+                    piece.piecePoint = -8;
                     SetPiece(piece, getColor, getPos);
                 }
                 break;

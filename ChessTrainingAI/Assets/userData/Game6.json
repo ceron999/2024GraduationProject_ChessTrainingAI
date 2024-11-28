@@ -1,0 +1,94 @@
+{
+    "list": [
+        {
+            "notation": "a4",
+            "startPos": "a2",
+            "endPos": "a4"
+        },
+        {
+            "notation": "Kd7",
+            "startPos": "e8",
+            "endPos": "d7"
+        },
+        {
+            "notation": "a5",
+            "startPos": "a4",
+            "endPos": "a5"
+        },
+        {
+            "notation": "Rf8",
+            "startPos": "a8",
+            "endPos": "f8"
+        },
+        {
+            "notation": "a6",
+            "startPos": "a5",
+            "endPos": "a6"
+        },
+        {
+            "notation": "Kc8",
+            "startPos": "d7",
+            "endPos": "c8"
+        },
+        {
+            "notation": "a7+",
+            "startPos": "a6",
+            "endPos": "a7"
+        },
+        {
+            "notation": "Kd8",
+            "startPos": "c8",
+            "endPos": "d8"
+        },
+        {
+            "notation": "",
+            "startPos": "",
+            "endPos": ""
+        },
+        {
+            "notation": "Ke7",
+            "startPos": "d8",
+            "endPos": "e7"
+        },
+        {
+            "notation": "Qa7+",
+            "startPos": "a8",
+            "endPos": "a7"
+        },
+        {
+            "notation": "Kd6",
+            "startPos": "e7",
+            "endPos": "d6"
+        },
+        {
+            "notation": "Ra6+",
+            "startPos": "a1",
+            "endPos": "a6"
+        },
+        {
+            "notation": "Ke5",
+            "startPos": "d6",
+            "endPos": "e5"
+        },
+        {
+            "notation": "Qc5+",
+            "startPos": "a7",
+            "endPos": "c5"
+        },
+        {
+            "notation": "Ke4",
+            "startPos": "e5",
+            "endPos": "e4"
+        },
+        {
+            "notation": "Ra4#",
+            "startPos": "a6",
+            "endPos": "a4"
+        },
+        {
+            "notation": "",
+            "startPos": "",
+            "endPos": ""
+        }
+    ]
+}
